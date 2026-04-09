@@ -77,6 +77,8 @@ async def create_agent(
             headers=_headers(),
             json=payload,
         )
+        if response.status_code >= 400:
+            raise ValueError(f"Ultravox {response.status_code}: {response.text}")
         response.raise_for_status()
         return response.json()
 
@@ -157,6 +159,8 @@ async def patch_agent(
             headers=_headers(),
             json=payload,
         )
+        if response.status_code >= 400:
+            raise ValueError(f"Ultravox {response.status_code}: {response.text}")
         response.raise_for_status()
         return response.json()
 
