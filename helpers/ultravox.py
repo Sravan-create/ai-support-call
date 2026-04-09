@@ -51,11 +51,14 @@ async def create_agent(
         "maxDuration": max_duration,
         "recordingEnabled": True,
         "firstSpeakerSettings": {"agent": {}},
-        "selectedTools": _rag_tools(corpus_id),
     }
 
-    if os.getenv("USE_SARVAM_TTS", "false").lower() == "true":
-        backend_url = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
+    rag = _rag_tools(corpus_id)
+    if rag:
+        call_template["selectedTools"] = rag
+
+    backend_url = os.getenv("BACKEND_URL", "").strip().rstrip("/")
+    if os.getenv("USE_SARVAM_TTS", "false").lower() == "true" and backend_url and backend_url.startswith("https://"):
         call_template["externalVoice"] = {
             "generic": {
                 "url": f"{backend_url}/webhook/sarvam-tts",
@@ -130,11 +133,14 @@ async def patch_agent(
         "maxDuration": max_duration,
         "recordingEnabled": True,
         "firstSpeakerSettings": {"agent": {}},
-        "selectedTools": _rag_tools(corpus_id),
     }
 
-    if os.getenv("USE_SARVAM_TTS", "false").lower() == "true":
-        backend_url = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
+    rag = _rag_tools(corpus_id)
+    if rag:
+        call_template["selectedTools"] = rag
+
+    backend_url = os.getenv("BACKEND_URL", "").strip().rstrip("/")
+    if os.getenv("USE_SARVAM_TTS", "false").lower() == "true" and backend_url and backend_url.startswith("https://"):
         call_template["externalVoice"] = {
             "generic": {
                 "url": f"{backend_url}/webhook/sarvam-tts",
