@@ -1,0 +1,38 @@
+name: Deploy to OCI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: SSH Deploy to OCI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_HOST }}
+          username: ${{ secrets.OCI_USER }}
+          key: ${{ secrets.OCI_SSH_KEY }}
+          script: |
+            set -e
+
+            echo ">>> Pulling latest code..."
+            cd /opt/venkanna-motors
+            git pull origin main
+
+            echo ">>> Installing dependencies..."
+            .venv/bin/pip install -r requirements.txt --quiet
+
+            echo ">>> Restarting service..."
+            sudo systemctl restart venkanna-motors
+
+            echo ">>> Checking service health..."
+            sleep 3
+            systemctl is-active --quiet venkanna-motors && echo "Service is running OK" || (echo "Service FAILED to start" && sudo journalctl -u venkanna-motors -n 30 && exit 1)
