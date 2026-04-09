@@ -16,6 +16,8 @@ def _headers() -> dict:
 
 def _rag_tools(corpus_id: str) -> list:
     """Returns the selectedTools list for the queryCorpus RAG tool."""
+    if not corpus_id:
+        return []
     return [
         {
             "toolName": "queryCorpus",
