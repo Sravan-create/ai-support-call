@@ -1,3 +1,4 @@
+from __future__ import annotations
 import httpx
 import os
 
@@ -46,7 +47,6 @@ async def create_agent(
     call_template = {
         "systemPrompt": system_prompt,
         "model": model,
-        "voice": voice,
         # "languageHint": language_hint,
         "maxDuration": max_duration,
         "recordingEnabled": True,
@@ -58,13 +58,17 @@ async def create_agent(
         call_template["selectedTools"] = rag
 
     backend_url = os.getenv("BACKEND_URL", "").strip().rstrip("/")
-    if os.getenv("USE_SARVAM_TTS", "false").lower() == "true" and backend_url and backend_url.startswith("https://"):
+    use_sarvam = os.getenv("USE_SARVAM_TTS", "false").lower() == "true"
+    if use_sarvam and backend_url and backend_url.startswith("https://"):
+        # externalVoice and voice are mutually exclusive in Ultravox
         call_template["externalVoice"] = {
             "generic": {
                 "url": f"{backend_url}/webhook/sarvam-tts",
                 "method": "POST"
             }
         }
+    else:
+        call_template["voice"] = voice
 
     payload = {
         "name": name,
@@ -129,7 +133,6 @@ async def patch_agent(
     """
     call_template = {
         "systemPrompt": system_prompt,
-        "voice": voice,
         "model": model,
         # "languageHint": language_hint,
         "maxDuration": max_duration,
@@ -142,13 +145,17 @@ async def patch_agent(
         call_template["selectedTools"] = rag
 
     backend_url = os.getenv("BACKEND_URL", "").strip().rstrip("/")
-    if os.getenv("USE_SARVAM_TTS", "false").lower() == "true" and backend_url and backend_url.startswith("https://"):
+    use_sarvam = os.getenv("USE_SARVAM_TTS", "false").lower() == "true"
+    if use_sarvam and backend_url and backend_url.startswith("https://"):
+        # externalVoice and voice are mutually exclusive in Ultravox
         call_template["externalVoice"] = {
             "generic": {
                 "url": f"{backend_url}/webhook/sarvam-tts",
                 "method": "POST"
             }
         }
+    else:
+        call_template["voice"] = voice
 
     payload = {
         "callTemplate": call_template
@@ -173,21 +180,28 @@ async def create_outbound_call(
 ) -> dict:
     """
     POST https://api.ultravox.ai/api/agents/{agent_id}/calls
-    Creates an outbound phone call via Vobiz SIP infrastructure.
-
-    Ultravox natively uses the underlying Plivo engine to route the call 
-    using the provided Vobiz token properties. 
+    Creates an outbound phone call via Vobiz SIP trunk.
     Audio flows: phone ↔ Vobiz SIP ↔ Ultravox AI.
     """
+    sip_domain   = os.getenv("VOBIZ_SIP_DOMAIN", "").strip()
+    sip_username = os.getenv("VOBIZ_SIP_USERNAME", "").strip()
+    sip_password = os.getenv("VOBIZ_SIP_PASSWORD", "").strip()
+
+    if not sip_domain or not sip_username or not sip_password:
+        raise ValueError("VOBIZ_SIP_DOMAIN, VOBIZ_SIP_USERNAME, VOBIZ_SIP_PASSWORD must all be set in .env")
+
     payload: dict = {
         "medium": {
-            "plivo": {
+            "sip": {
                 "outgoing": {
-                    "to": to_number,
-                    "from": from_number,
+                    "to":       f"sip:{to_number}@{sip_domain}",
+                    "from":     from_number,
+                    "username": sip_username,
+                    "password": sip_password,
                 }
             }
         },
+        "firstSpeakerSettings": {"user": {}},
         "recordingEnabled": True,
     }
     if metadata:
@@ -199,6 +213,8 @@ async def create_outbound_call(
             headers=_headers(),
             json=payload,
         )
+        if response.status_code >= 400:
+            raise ValueError(f"Ultravox {response.status_code}: {response.text}")
         response.raise_for_status()
         return response.json()
 
