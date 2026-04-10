@@ -371,7 +371,7 @@
     /* Stat cards row */
     .stat-cards {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       margin-bottom: 16px;
     }
@@ -878,7 +878,7 @@
     @media (max-width: 900px) {
       .sidebar { display: none; }
       .calls-layout { grid-template-columns: 1fr; }
-      .stat-cards { grid-template-columns: repeat(3,1fr); }
+      .stat-cards { grid-template-columns: repeat(2,1fr); }
       .summary-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -1012,7 +1012,7 @@
       <!-- Stat Cards -->
       <div class="stat-cards" id="statCards">
         <div class="stat-card total">
-          <div class="stat-card-label">Total</div>
+          <div class="stat-card-label">Total Calls</div>
           <div class="stat-card-num" id="statTotal">—</div>
           <div class="stat-card-bar"><div class="stat-card-fill" id="barTotal" style="width:100%"></div></div>
         </div>
@@ -1030,11 +1030,6 @@
           <div class="stat-card-label">Neutral</div>
           <div class="stat-card-num" id="statNeutral">—</div>
           <div class="stat-card-bar"><div class="stat-card-fill" id="barNeutral" style="width:0%"></div></div>
-        </div>
-        <div class="stat-card callback">
-          <div class="stat-card-label">Callback</div>
-          <div class="stat-card-num" id="statCallback">—</div>
-          <div class="stat-card-bar"><div class="stat-card-fill" id="barCallback" style="width:0%"></div></div>
         </div>
       </div>
 
@@ -1083,14 +1078,13 @@
                 <th>Status</th>
                 <th>Sentiment</th>
                 <th>Takeaway</th>
-                <th>Callback</th>
                 <th>Duration</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="logsBody">
               <tr class="loading-row">
-                <td colspan="7">
+                <td colspan="6">
                   <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
                     <div class="spinner"></div> Loading calls…
                   </div>
@@ -1244,7 +1238,7 @@
       _cachedCalls = [];
       renderStats([]);
       document.getElementById('logsBody').innerHTML = `
-        <tr><td colspan="7">
+        <tr><td colspan="6">
           <div class="empty-state">
             <div class="empty-icon">⚠️</div>
             <div class="empty-title">Failed to load logs</div>
@@ -1261,7 +1255,7 @@
   function setLoading(on) {
     if (on) {
       document.getElementById('logsBody').innerHTML = `
-        <tr class="loading-row"><td colspan="7">
+        <tr class="loading-row"><td colspan="6">
           <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
             <div class="spinner"></div> Fetching call logs…
           </div>
@@ -1283,24 +1277,34 @@
 
   // ── STATS ─────────────────────────────────────────────────────────────────────
   function renderStats(calls) {
-    const total    = calls.length;
-    const positive = calls.filter(c => (c.sentiment || '').toLowerCase() === 'positive').length;
-    const negative = calls.filter(c => (c.sentiment || '').toLowerCase() === 'negative').length;
-    const neutral  = calls.filter(c => (c.sentiment || '').toLowerCase() === 'neutral').length;
-    const callback = calls.filter(c => c.callback).length;
+    const total = calls.filter(c => c.joined).length;  // answered calls only
+    document.getElementById('statTotal').textContent = calls.length;
+    // Sentiment comes from AI Summary (GPT analysis) — show placeholder until then
+    const hasSentiment = calls.some(c => c.sentiment);
+    if (!hasSentiment) {
+      ['statPos','statNeg','statNeutral'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+      ['barPos','barNeg','barNeutral'].forEach(id => {
+        document.getElementById(id).style.width = '0%';
+      });
+    }
+  }
 
-    document.getElementById('statTotal').textContent    = total;
-    document.getElementById('statPos').textContent      = positive;
-    document.getElementById('statNeg').textContent      = negative;
-    document.getElementById('statNeutral').textContent  = neutral;
-    document.getElementById('statCallback').textContent = callback;
+  // Called after AI summary returns to update sentiment cards from GPT analysis
+  function updateSentimentCards(breakdown, total) {
+    const pos = breakdown.positive || 0;
+    const neg = breakdown.negative || 0;
+    const neu = breakdown.neutral  || 0;
+    const t   = total || (pos + neg + neu) || 1;
+    const pct = (n) => Math.max(4, Math.round(n / t * 100)) + '%';
 
-    const pct = (n) => total ? Math.max(4, Math.round(n / total * 100)) + '%' : '0%';
-    document.getElementById('barTotal').style.width    = '100%';
-    document.getElementById('barPos').style.width      = pct(positive);
-    document.getElementById('barNeg').style.width      = pct(negative);
-    document.getElementById('barNeutral').style.width  = pct(neutral);
-    document.getElementById('barCallback').style.width = pct(callback);
+    document.getElementById('statPos').textContent     = pos;
+    document.getElementById('statNeg').textContent     = neg;
+    document.getElementById('statNeutral').textContent = neu;
+    document.getElementById('barPos').style.width      = pct(pos);
+    document.getElementById('barNeg').style.width      = pct(neg);
+    document.getElementById('barNeutral').style.width  = pct(neu);
   }
 
   // ── TABLE ─────────────────────────────────────────────────────────────────────
@@ -1319,7 +1323,7 @@
     _expandedCallId = null;
 
     if (!calls.length) {
-      body.innerHTML = `<tr><td colspan="7">
+      body.innerHTML = `<tr><td colspan="6">
         <div class="empty-state">
           <div class="empty-icon">📵</div>
           <div class="empty-title">No answered calls yet</div>
@@ -1351,10 +1355,6 @@
         ? `<span class="badge ${sentiment}"><span class="badge-dot"></span>${cap(sentiment)}</span>`
         : `<span style="color:var(--text-3);font-size:12px">—</span>`;
 
-      const cbBadge = cbFlag
-        ? `<span class="badge callback"><span class="badge-dot"></span>Yes</span>`
-        : `<span style="color:var(--text-3);font-size:12px">No</span>`;
-
       const tr = document.createElement('tr');
       tr.dataset.callId = callId;
       tr.innerHTML = `
@@ -1365,7 +1365,6 @@
         <td><span class="badge ${statusClass}"><span class="badge-dot"></span>${statusLabel}</span></td>
         <td>${sentimentBadge}</td>
         <td><div class="td-feedback">${esc(takeaway)}</div></td>
-        <td>${cbBadge}</td>
         <td><span class="td-date">${esc(duration)}</span></td>
         <td>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:nowrap;">
@@ -1394,7 +1393,7 @@
     const expandTr = document.createElement('tr');
     expandTr.id = 'expandRow';
     expandTr.className = 'expanded';
-    expandTr.innerHTML = `<td colspan="7">
+    expandTr.innerHTML = `<td colspan="6">
       <div class="transcript-header">Transcript</div>
       <div class="transcript-box" id="transcriptContent">
         <div style="display:flex;gap:8px;align-items:center;color:var(--text-3);">
@@ -1503,6 +1502,11 @@
 
     const sb = d.sentiment_breakdown || {};
     const total = (sb.positive||0) + (sb.negative||0) + (sb.neutral||0) || d.calls_analyzed || 0;
+
+    // Push real sentiment numbers into the stat cards
+    if (sb.positive !== undefined || sb.negative !== undefined || sb.neutral !== undefined) {
+      updateSentimentCards(sb, d.calls_analyzed || total);
+    }
 
     const ul = (arr) => Array.isArray(arr) && arr.length
       ? `<ul class="summary-ul">${arr.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`
