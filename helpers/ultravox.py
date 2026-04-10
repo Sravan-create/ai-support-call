@@ -206,19 +206,11 @@ async def create_outbound_call(
         "recordingEnabled": True,
     }
 
-    # Inject customer name so Raajesh greets them by name
-    if customer_name:
-        from helpers.prompts import SYSTEM_PROMPT
-        payload["systemPromptOverride"] = (
-            f"CUSTOMER INFO FOR THIS CALL:\n"
-            f"Name: {customer_name}\n"
-            f"Phone: {to_number}\n\n"
-            f"IMPORTANT: Start by confirming you are speaking with {customer_name}. "
-            f"Example opening: 'Hello, am I speaking with {customer_name}? "
-            f"This is Raajesh calling from Shri Venkanna Motors — this is a quick feedback call "
-            f"about your recent service, and I also have an offer to share. Is this a good time?'\n\n"
-            + SYSTEM_PROMPT
-        )
+    # Fill {{customer_name}} and {{phone_number}} placeholders in the agent's system prompt
+    payload["templateContext"] = {
+        "customer_name": customer_name or "Customer",
+        "phone_number":  to_number,
+    }
 
     # Store customer info in metadata for retrieval in logs
     call_metadata = {"customer_name": customer_name, "phone_number": to_number}
