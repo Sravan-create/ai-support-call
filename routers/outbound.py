@@ -79,6 +79,7 @@ async def initiate_outbound_call(body: OutboundCallRequest):
             agent_id=agent_id,
             to_number=to_number,
             from_number=from_number,
+            customer_name=body.customer_name,
         )
     except Exception as e:
         logger.error(f"Outbound call failed: {e}")

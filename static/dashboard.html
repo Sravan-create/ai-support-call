@@ -1406,24 +1406,20 @@
   }
 
   // ── RECORDING MODAL ────────────────────────────────────────────────────────────
-  async function openRecording(e, callId, name, phone) {
+  function openRecording(e, callId, name, phone) {
     e.stopPropagation();
-    if (!callId || callId === 'null') { toast('No recording available', 'error'); return; }
-
+    if (!callId || callId === 'null' || callId === 'undefined') {
+      toast('No recording available', 'error'); return;
+    }
     document.getElementById('modalName').textContent  = name  || '—';
     document.getElementById('modalPhone').textContent = phone || '—';
-    document.getElementById('modalContent').innerHTML = `<div class="modal-loading"><div class="spinner"></div></div>`;
+    const url = `${BASE}/logs/calls/${callId}/recording`;
+    document.getElementById('modalContent').innerHTML =
+      `<audio controls preload="auto"
+         src="${url}"
+         onerror="document.getElementById('modalContent').innerHTML='<div class=\\'modal-loading\\' style=\\'color:var(--error)\\'>Recording not available for this call</div>'">
+       </audio>`;
     document.getElementById('recordingModal').classList.add('open');
-
-    try {
-      const url = `${BASE}/logs/calls/${callId}/recording`;
-      const res = await fetch(url, { method: 'HEAD' });
-      if (!res.ok) throw new Error('Recording not found');
-      document.getElementById('modalContent').innerHTML = `<audio controls src="${url}" preload="auto"></audio>`;
-    } catch {
-      document.getElementById('modalContent').innerHTML = `
-        <div class="modal-loading" style="color:var(--error)">Recording not available for this call</div>`;
-    }
   }
 
   function closeModal(e) {

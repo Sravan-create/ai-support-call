@@ -176,6 +176,7 @@ async def create_outbound_call(
     agent_id: str,
     to_number: str,
     from_number: str,
+    customer_name: str = "",
     metadata: dict | None = None,
 ) -> dict:
     """
@@ -201,11 +202,29 @@ async def create_outbound_call(
                 }
             }
         },
-        "firstSpeakerSettings": {"user": {}},
+        "firstSpeakerSettings": {"agent": {}},
         "recordingEnabled": True,
     }
+
+    # Inject customer name so Raajesh greets them by name
+    if customer_name:
+        from helpers.prompts import SYSTEM_PROMPT
+        payload["systemPromptOverride"] = (
+            f"CUSTOMER INFO FOR THIS CALL:\n"
+            f"Name: {customer_name}\n"
+            f"Phone: {to_number}\n\n"
+            f"IMPORTANT: Start by confirming you are speaking with {customer_name}. "
+            f"Example opening: 'Hello, am I speaking with {customer_name}? "
+            f"This is Raajesh calling from Shri Venkanna Motors — this is a quick feedback call "
+            f"about your recent service, and I also have an offer to share. Is this a good time?'\n\n"
+            + SYSTEM_PROMPT
+        )
+
+    # Store customer info in metadata for retrieval in logs
+    call_metadata = {"customer_name": customer_name, "phone_number": to_number}
     if metadata:
-        payload["metadata"] = metadata
+        call_metadata.update(metadata)
+    payload["metadata"] = call_metadata
 
     async with httpx.AsyncClient(timeout=30) as client:
         response = await client.post(

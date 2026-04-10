@@ -31,6 +31,7 @@ def _validate_e164(v: str) -> str:
 class OutboundCallRequest(BaseModel):
     # Phone number in E.164 format: +[country_code][number]  e.g. +919876543210
     phone_number: str
+    customer_name: str = ""
     jd_text: str = ""
 
     @field_validator("phone_number")

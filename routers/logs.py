@@ -142,19 +142,22 @@ async def list_calls(
         dt_to = dt_to.replace(hour=23, minute=59, second=59, microsecond=999999)
 
     def _to_summary(call: dict) -> CallSummary:
+        meta = call.get("metadata") or {}
         return CallSummary(
-            callId       = call.get("callId", ""),
-            created      = call.get("created"),
-            joined       = call.get("joined"),
-            ended        = call.get("ended"),
-            duration     = _parse_duration(
-                               call.get("joined"),
-                               call.get("ended"),
-                               call.get("billedDuration"),
-                           ),
-            endReason    = call.get("endReason"),
-            shortSummary = call.get("shortSummary"),
-            medium       = _extract_medium(call.get("medium")),
+            callId        = call.get("callId", ""),
+            created       = call.get("created"),
+            joined        = call.get("joined"),
+            ended         = call.get("ended"),
+            duration      = _parse_duration(
+                                call.get("joined"),
+                                call.get("ended"),
+                                call.get("billedDuration"),
+                            ),
+            endReason     = call.get("endReason"),
+            shortSummary  = call.get("shortSummary"),
+            medium        = _extract_medium(call.get("medium")),
+            customer_name = meta.get("customer_name", ""),
+            phone_number  = meta.get("phone_number", ""),
         )
 
     # ── Filtered mode: fetch pages until date window exhausted ───────────────
