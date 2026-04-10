@@ -31,8 +31,8 @@ def _detect_language(text: str) -> tuple[str, str]:
             return "or-IN", "meera"
         if 0x0980 <= cp <= 0x09FF:   # Bengali
             return "bn-IN", "meera"
-    # Default: Indian English with natural accent
-    return "en-IN", "meera"
+    # Default: Indian English — Rahul (male, natural Indian accent)
+    return "en-IN", "rahul"
 
 
 async def synthesize_speech(text: str) -> bytes:
