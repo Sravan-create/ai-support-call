@@ -5,6 +5,24 @@ import os
 ULTRAVOX_BASE_URL = "https://api.ultravox.ai/api"
 
 
+def _get_backend_url() -> str:
+    """
+    Returns the effective public HTTPS backend URL.
+    Priority:
+      1. BACKEND_URL env var (if it starts with https://)
+      2. RENDER_EXTERNAL_URL  (auto-set by Render on every deploy — no manual config needed)
+      3. Empty string (Sarvam TTS disabled)
+    """
+    url = os.getenv("BACKEND_URL", "").strip().rstrip("/")
+    if url.startswith("https://"):
+        return url
+    # Render automatically injects this on every service
+    render_url = os.getenv("RENDER_EXTERNAL_URL", "").strip().rstrip("/")
+    if render_url:
+        return render_url
+    return ""
+
+
 def _headers() -> dict:
     api_key = os.getenv("ULTRAVOX_API_KEY")
     if not api_key or api_key == "your_ultravox_api_key_here":
@@ -57,9 +75,9 @@ async def create_agent(
     if rag:
         call_template["selectedTools"] = rag
 
-    backend_url = os.getenv("BACKEND_URL", "").strip().rstrip("/")
+    backend_url = _get_backend_url()
     use_sarvam = os.getenv("USE_SARVAM_TTS", "false").lower() == "true"
-    if use_sarvam and backend_url and backend_url.startswith("https://"):
+    if use_sarvam and backend_url:
         # externalVoice and voice are mutually exclusive in Ultravox
         call_template["externalVoice"] = {
             "generic": {
@@ -144,9 +162,9 @@ async def patch_agent(
     if rag:
         call_template["selectedTools"] = rag
 
-    backend_url = os.getenv("BACKEND_URL", "").strip().rstrip("/")
+    backend_url = _get_backend_url()
     use_sarvam = os.getenv("USE_SARVAM_TTS", "false").lower() == "true"
-    if use_sarvam and backend_url and backend_url.startswith("https://"):
+    if use_sarvam and backend_url:
         # externalVoice and voice are mutually exclusive in Ultravox
         call_template["externalVoice"] = {
             "generic": {

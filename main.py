@@ -36,7 +36,8 @@ async def ensure_webhook(agent_id: str):
         logger.info(f"Webhook already registered: {webhook_id} — skipping")
         return
 
-    backend_url    = os.getenv("BACKEND_URL", "").strip().rstrip("/")
+    backend_url    = (os.getenv("BACKEND_URL", "").strip().rstrip("/")
+                      or os.getenv("RENDER_EXTERNAL_URL", "").strip().rstrip("/"))
     webhook_secret = os.getenv("WEBHOOK_SECRET", "").strip()
 
     if not backend_url:

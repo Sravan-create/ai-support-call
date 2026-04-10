@@ -59,9 +59,9 @@ async def synthesize_speech(text: str) -> bytes:
         "target_language_code": lang_code,
         "speaker": speaker,
         "pitch": 0,
-        "pace": 1.05,          # Slightly faster = more natural conversation pace
+        "pace": 1.1,
         "loudness": 1.5,
-        "speech_sample_rate": 8000,
+        "speech_sample_rate": 16000,   # Higher = crisper, more natural sound
         "enable_preprocessing": True,
         "model": "bulbul:v1",
     }
