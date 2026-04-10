@@ -1067,7 +1067,13 @@
       <div class="table-outer">
         <div class="table-toolbar">
           <span class="table-toolbar-title">Calls</span>
-          <span class="table-count" id="logsCount">Loading…</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text-2);text-transform:none;letter-spacing:0;margin:0;">
+              <input type="checkbox" id="filterAnswered" checked onchange="applyFilter()" style="accent-color:var(--accent);cursor:pointer;" />
+              Answered only
+            </label>
+            <span class="table-count" id="logsCount">Loading…</span>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
@@ -1233,8 +1239,7 @@
       _cachedCalls = calls;
 
       renderStats(calls);
-      renderTable(calls);
-      document.getElementById('logsCount').textContent = `${calls.length} record${calls.length !== 1 ? 's' : ''}`;
+      applyFilter();
     } catch (err) {
       _cachedCalls = [];
       renderStats([]);
@@ -1299,6 +1304,16 @@
   }
 
   // ── TABLE ─────────────────────────────────────────────────────────────────────
+  function applyFilter() {
+    const answeredOnly = document.getElementById('filterAnswered').checked;
+    const filtered = answeredOnly
+      ? _cachedCalls.filter(c => c.joined)   // only calls the customer actually answered
+      : _cachedCalls;
+    renderTable(filtered);
+    document.getElementById('logsCount').textContent =
+      `${filtered.length} of ${_cachedCalls.length} record${_cachedCalls.length !== 1 ? 's' : ''}`;
+  }
+
   function renderTable(calls) {
     const body = document.getElementById('logsBody');
     _expandedCallId = null;
@@ -1307,8 +1322,8 @@
       body.innerHTML = `<tr><td colspan="7">
         <div class="empty-state">
           <div class="empty-icon">📵</div>
-          <div class="empty-title">No calls yet</div>
-          <div class="empty-desc">Trigger a call from the Calls page to see data here</div>
+          <div class="empty-title">No answered calls yet</div>
+          <div class="empty-desc">Uncheck "Answered only" to see all calls, or trigger a new call</div>
         </div></td></tr>`;
       return;
     }
@@ -1319,15 +1334,18 @@
       const name      = call.customer_name || '—';
       const phone     = call.phone_number  || '—';
       const sentiment = (call.sentiment || '').toLowerCase();
-      const status    = (call.endReason || 'unknown').toLowerCase();
+      const endReason = (call.endReason || '').toLowerCase();
       const takeaway  = call.takeaway || call.shortSummary || '—';
       const duration  = call.duration || '—';
       const cbFlag    = call.callback;
 
-      // Status badge: map endReason
-      let statusClass = 'initiated';
-      if (status === 'hangup' || status === 'user_hangup' || status === 'agent_hangup') statusClass = 'completed';
-      else if (status.includes('error') || status.includes('fail')) statusClass = 'failed';
+      // Status: if customer joined = completed, else check endReason
+      let statusClass = 'initiated', statusLabel = 'Initiated';
+      if (call.joined) {
+        statusClass = 'completed'; statusLabel = 'Completed';
+      } else if (endReason.includes('error') || endReason.includes('fail')) {
+        statusClass = 'failed'; statusLabel = 'Failed';
+      }
 
       const sentimentBadge = sentiment && sentiment !== 'null' && sentiment !== 'none'
         ? `<span class="badge ${sentiment}"><span class="badge-dot"></span>${cap(sentiment)}</span>`
@@ -1344,9 +1362,9 @@
           <div class="td-name">${esc(name)}</div>
           <div class="td-phone">${esc(phone)}</div>
         </td>
-        <td><span class="badge ${statusClass}"><span class="badge-dot"></span>${cap(statusClass)}</span></td>
+        <td><span class="badge ${statusClass}"><span class="badge-dot"></span>${statusLabel}</span></td>
         <td>${sentimentBadge}</td>
-        <td><div class="td-feedback" title="${esc(takeaway)}">${esc(takeaway)}</div></td>
+        <td><div class="td-feedback">${esc(takeaway)}</div></td>
         <td>${cbBadge}</td>
         <td><span class="td-date">${esc(duration)}</span></td>
         <td>
