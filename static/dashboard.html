@@ -6,51 +6,60 @@
   <title>Venkanna Motors — AI Feedback System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #070B14;
-      --sidebar: #0D1117;
-      --card: #0D1117;
-      --card-border: rgba(255,255,255,0.06);
-      --accent: #F97316;
-      --accent-dim: rgba(249,115,22,0.12);
-      --accent-glow: rgba(249,115,22,0.25);
-      --text: #F1F5F9;
-      --muted: #64748B;
-      --success: #22C55E;
-      --success-dim: rgba(34,197,94,0.12);
-      --error: #EF4444;
-      --error-dim: rgba(239,68,68,0.12);
-      --warn: #F59E0B;
-      --warn-dim: rgba(245,158,11,0.12);
-      --neutral-dim: rgba(100,116,139,0.15);
-      --sidebar-w: 240px;
-      --radius: 12px;
-      --radius-sm: 8px;
+      --bg:           #0A0D14;
+      --sidebar-bg:   #0D1117;
+      --sidebar-border: rgba(255,255,255,0.07);
+      --card-bg:      #111827;
+      --card-bg-2:    #161F2E;
+      --card-border:  rgba(255,255,255,0.07);
+      --table-head:   #0D1117;
+      --table-row-hover: rgba(255,255,255,0.025);
+      --accent:       #F97316;
+      --accent-dim:   rgba(249,115,22,0.1);
+      --accent-glow:  rgba(249,115,22,0.2);
+      --accent-border:rgba(249,115,22,0.3);
+      --text:         #E2E8F0;
+      --text-2:       #94A3B8;
+      --text-3:       #475569;
+      --success:      #22C55E;
+      --success-bg:   rgba(34,197,94,0.08);
+      --success-bdr:  rgba(34,197,94,0.25);
+      --error:        #F87171;
+      --error-bg:     rgba(248,113,113,0.08);
+      --error-bdr:    rgba(248,113,113,0.25);
+      --warn:         #FBBF24;
+      --warn-bg:      rgba(251,191,36,0.08);
+      --warn-bdr:     rgba(251,191,36,0.25);
+      --neutral-bg:   rgba(148,163,184,0.08);
+      --neutral-bdr:  rgba(148,163,184,0.2);
+      --sidebar-w:    240px;
+      --radius:       10px;
+      --radius-sm:    7px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    /* Dot grid background */
+    /* Subtle noise texture overlay */
     body::before {
       content: '';
       position: fixed; inset: 0;
-      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
-      background-size: 28px 28px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Ambient orange glow top-right */
-    body::after {
-      content: '';
-      position: fixed;
-      top: -200px; right: -200px;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 70%);
+      background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 32px 32px;
       pointer-events: none;
       z-index: 0;
     }
@@ -61,671 +70,786 @@
     /* ── SIDEBAR ── */
     .sidebar {
       width: var(--sidebar-w);
-      background: var(--sidebar);
-      border-right: 1px solid var(--card-border);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
       display: flex;
       flex-direction: column;
-      padding: 24px 0;
       flex-shrink: 0;
-      position: relative;
       z-index: 10;
     }
 
     .sidebar-logo {
-      padding: 0 20px 28px;
-      border-bottom: 1px solid var(--card-border);
-      margin-bottom: 16px;
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid var(--sidebar-border);
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
     }
 
     .logo-mark {
-      width: 40px; height: 40px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #F97316, #EA580C);
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #F97316 0%, #DC2626 100%);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 20px;
-      color: #fff;
-      margin-bottom: 12px;
-      box-shadow: 0 0 24px rgba(249,115,22,0.35);
-    }
-
-    .logo-title {
-      font-family: 'Syne', sans-serif;
       font-weight: 700;
-      font-size: 14px;
-      color: var(--text);
-      letter-spacing: 0.01em;
-      line-height: 1.3;
+      font-size: 17px;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(249,115,22,0.3);
     }
 
-    .logo-sub {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-      letter-spacing: 0.03em;
-    }
+    .logo-text { flex: 1; overflow: hidden; }
+    .logo-title { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logo-sub   { font-size: 11px; color: var(--text-2); margin-top: 1px; }
 
-    /* Live badge */
     .live-badge {
-      display: flex; align-items: center; gap: 6px;
-      margin-top: 10px;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 9px;
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.2);
+      border-radius: 99px;
       font-size: 11px;
-      color: var(--success);
       font-weight: 500;
+      color: var(--success);
     }
 
     .live-dot {
-      width: 7px; height: 7px;
+      width: 6px; height: 6px;
       border-radius: 50%;
       background: var(--success);
-      animation: pulse-green 2s infinite;
+      animation: pulse-dot 2.2s ease-in-out infinite;
     }
 
-    @keyframes pulse-green {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
-      50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
     }
 
     /* Nav */
-    .nav { flex: 1; padding: 0 12px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-section { padding: 12px 8px; flex: 1; }
+    .nav-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
 
     .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
       border-radius: var(--radius-sm);
       cursor: pointer;
       font-size: 13.5px;
       font-weight: 500;
-      color: var(--muted);
-      transition: all 0.18s ease;
-      border-left: 2px solid transparent;
+      color: var(--text-2);
+      transition: all 0.15s;
       user-select: none;
       position: relative;
+      margin-bottom: 1px;
     }
 
-    .nav-item:hover {
-      color: var(--text);
-      background: rgba(255,255,255,0.04);
-    }
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
 
     .nav-item.active {
-      color: var(--accent);
       background: var(--accent-dim);
-      border-left-color: var(--accent);
+      color: var(--accent);
     }
 
-    .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 20%; bottom: 20%;
+      width: 2.5px;
+      border-radius: 0 2px 2px 0;
+      background: var(--accent);
+    }
 
-    /* Profile section at bottom */
-    .sidebar-profile {
-      padding: 16px 12px 0;
-      border-top: 1px solid var(--card-border);
-      margin-top: 16px;
+    .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+
+    /* Profile bottom */
+    .sidebar-footer {
+      padding: 12px 8px;
+      border-top: 1px solid var(--sidebar-border);
     }
 
     .profile-btn {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 10px;
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 10px;
       border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: background 0.18s ease;
-      width: 100%;
+      transition: background 0.15s;
     }
-
     .profile-btn:hover { background: rgba(255,255,255,0.04); }
 
     .avatar {
-      width: 34px; height: 34px;
+      width: 30px; height: 30px;
       border-radius: 50%;
       background: linear-gradient(135deg, #F97316, #7C3AED);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 13px;
-      color: #fff;
+      font-weight: 700; font-size: 12px; color: #fff;
       flex-shrink: 0;
     }
 
     .profile-info { flex: 1; overflow: hidden; }
+    .profile-name { font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .profile-did  { font-size: 11px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .profile-edit { color: var(--text-3); font-size: 12px; }
 
-    .profile-name {
-      font-size: 13px; font-weight: 500;
-      color: var(--text);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .profile-did {
-      font-size: 11px; color: var(--muted);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .profile-edit-icon { color: var(--muted); font-size: 13px; flex-shrink: 0; }
-
-    /* ── MAIN CONTENT ── */
+    /* ── MAIN ── */
     .main {
       flex: 1;
       overflow-y: auto;
-      padding: 36px 40px;
+      padding: 28px 32px;
       position: relative;
     }
 
-    .main::-webkit-scrollbar { width: 6px; }
+    .main::-webkit-scrollbar { width: 5px; }
     .main::-webkit-scrollbar-track { background: transparent; }
-    .main::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    .main::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 3px; }
 
-    /* Page fade-in */
-    .page { display: none; animation: fadeIn 0.25s ease; }
-    .page.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    /* Pages */
+    .page { display: none; }
+    .page.active { display: block; animation: fadein 0.2s ease; }
+    @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Page header */
-    .page-header { margin-bottom: 32px; }
-
-    .page-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-
-    .page-subtitle { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    .page-hd { margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .page-hd-left {}
+    .page-title { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+    .page-sub   { font-size: 13px; color: var(--text-2); margin-top: 3px; }
 
     /* ── CARDS ── */
     .card {
-      background: var(--card);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      padding: 24px;
+      padding: 20px 22px;
     }
 
+    .card + .card { margin-top: 16px; }
+
     .card-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--text);
-      letter-spacing: 0.01em;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title-icon {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      background: var(--accent-dim);
+      flex-shrink: 0;
     }
 
     /* ── CALLS PAGE ── */
-    .calls-grid {
+    .calls-layout {
       display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 20px;
+      grid-template-columns: 1fr 320px;
+      gap: 16px;
       align-items: start;
     }
 
-    .form-group { margin-bottom: 18px; }
+    .form-group { margin-bottom: 15px; }
 
     label {
       display: block;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 500;
-      color: var(--muted);
-      margin-bottom: 7px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
     }
 
     input[type="text"], input[type="tel"] {
       width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.09);
+      background: #0D1117;
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: var(--radius-sm);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      padding: 11px 14px;
+      font-family: var(--font);
+      font-size: 13.5px;
+      padding: 10px 13px;
       outline: none;
-      transition: border-color 0.18s, box-shadow 0.18s;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
     input[type="text"]:focus, input[type="tel"]:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
+      box-shadow: 0 0 0 3px var(--accent-dim);
     }
 
-    input::placeholder { color: var(--muted); opacity: 0.6; }
+    input::placeholder { color: var(--text-3); }
 
     .btn-primary {
       width: 100%;
-      padding: 13px 20px;
-      background: linear-gradient(135deg, #F97316, #EA580C);
+      padding: 11px 18px;
+      background: var(--accent);
       border: none;
       border-radius: var(--radius-sm);
       color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
+      font-family: var(--font);
+      font-size: 13.5px;
       font-weight: 600;
       cursor: pointer;
-      letter-spacing: 0.02em;
-      transition: all 0.2s ease;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      box-shadow: 0 4px 20px rgba(249,115,22,0.25);
+      transition: all 0.18s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 12px rgba(249,115,22,0.25);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(249,115,22,0.4);
-    }
-
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary:hover { background: #EA580C; box-shadow: 0 4px 20px rgba(249,115,22,0.35); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
 
     .btn-secondary {
-      padding: 9px 16px;
-      background: rgba(255,255,255,0.06);
+      padding: 8px 14px;
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-sm);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
+      color: var(--text-2);
+      font-family: var(--font);
+      font-size: 12.5px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: all 0.15s;
     }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.15); color: var(--text); background: var(--card-bg-2); }
 
-    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
-
-    /* Call result */
     .call-result {
-      margin-top: 16px;
-      padding: 14px;
+      margin-top: 14px;
+      padding: 12px 14px;
       border-radius: var(--radius-sm);
-      font-size: 13.5px;
+      font-size: 13px;
       display: none;
+      line-height: 1.55;
     }
+    .call-result.success { background: var(--success-bg); border: 1px solid var(--success-bdr); color: var(--success); display: block; }
+    .call-result.error   { background: var(--error-bg);   border: 1px solid var(--error-bdr);   color: var(--error);   display: block; }
 
-    .call-result.success {
-      background: var(--success-dim);
-      border: 1px solid rgba(34,197,94,0.25);
-      color: var(--success);
-      display: block;
-    }
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 13px; }
 
-    .call-result.error {
-      background: var(--error-dim);
-      border: 1px solid rgba(239,68,68,0.25);
-      color: var(--error);
-      display: block;
-    }
-
-    /* How it works */
-    .steps { display: flex; flex-direction: column; gap: 16px; }
-
-    .step {
-      display: flex; gap: 14px; align-items: flex-start;
-    }
+    .step { display: flex; gap: 12px; }
 
     .step-num {
-      width: 28px; height: 28px;
-      border-radius: 50%;
+      width: 24px; height: 24px;
+      border-radius: 6px;
       background: var(--accent-dim);
-      border: 1px solid rgba(249,115,22,0.3);
+      border: 1px solid var(--accent-border);
       color: var(--accent);
-      font-family: 'Syne', sans-serif;
+      font-size: 11px;
       font-weight: 700;
-      font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-content {}
+    .step-title { font-size: 12.5px; font-weight: 600; color: var(--text); }
+    .step-desc  { font-size: 12px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+
+    /* ── LOGS PAGE ── */
+    .logs-hd-right { display: flex; align-items: center; gap: 10px; }
+    .refresh-label { font-size: 12px; color: var(--text-3); }
+    .refresh-cd { font-size: 12px; font-weight: 600; color: var(--accent); min-width: 28px; }
+
+    /* Stat cards row */
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--card-bg-2);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+
+    .stat-card-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+
+    .stat-card-num {
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .stat-card.positive .stat-card-num { color: var(--success); }
+    .stat-card.negative .stat-card-num { color: var(--error); }
+    .stat-card.callback .stat-card-num { color: var(--accent); }
+    .stat-card.neutral  .stat-card-num { color: var(--text-2); }
+
+    .stat-card-bar {
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .stat-card-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+    .stat-card.positive .stat-card-fill { background: var(--success); }
+    .stat-card.negative .stat-card-fill { background: var(--error); }
+    .stat-card.callback .stat-card-fill { background: var(--accent); }
+    .stat-card.neutral  .stat-card-fill { background: var(--text-3); }
+    .stat-card.total    .stat-card-fill { background: var(--accent); }
+
+    /* AI Summary section */
+    .summary-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .summary-header {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .summary-header:hover { background: rgba(255,255,255,0.01); }
+
+    .summary-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: var(--text);
+    }
+
+    .summary-ai-badge {
+      padding: 2px 8px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .summary-header-right { display: flex; align-items: center; gap: 10px; }
+    .summary-ts { font-size: 11px; color: var(--text-3); }
+    .summary-toggle { font-size: 14px; color: var(--text-3); transition: transform 0.2s; }
+    .summary-toggle.open { transform: rotate(180deg); }
+
+    .summary-body {
+      padding: 20px;
+      display: none;
+    }
+    .summary-body.open { display: block; }
+
+    .btn-gen-summary {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 16px;
+      background: var(--accent);
+      border: none; border-radius: var(--radius-sm);
+      color: #fff; font-family: var(--font); font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+      box-shadow: 0 2px 10px rgba(249,115,22,0.2);
+    }
+    .btn-gen-summary:hover { background: #EA580C; transform: translateY(-1px); }
+    .btn-gen-summary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .summary-placeholder {
+      text-align: center;
+      padding: 32px 0 20px;
+    }
+
+    .summary-placeholder-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.3; }
+    .summary-placeholder-text { font-size: 13px; color: var(--text-3); margin-bottom: 16px; }
+
+    /* Generated summary layout */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .summary-grid.full { grid-template-columns: 1fr; }
+
+    .summary-section {
+      background: var(--card-bg-2);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+    }
+
+    .summary-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-3);
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .summary-section-title .dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    .summary-ul {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .summary-ul li {
+      font-size: 12.5px;
+      color: var(--text-2);
+      display: flex; gap: 8px; align-items: flex-start;
+      line-height: 1.55;
+    }
+
+    .summary-ul li::before {
+      content: '·';
+      color: var(--accent);
+      font-size: 16px;
+      line-height: 1.1;
+      flex-shrink: 0;
+    }
+
+    .theme-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+    .theme-tag {
+      padding: 3px 9px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 99px;
+      font-size: 11.5px;
+      color: var(--text-2);
+    }
+
+    .insight-row {
+      display: flex; gap: 8px; align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 12.5px; color: var(--text-2); line-height: 1.55;
+    }
+    .insight-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .insight-num {
+      min-width: 20px; height: 20px;
+      background: var(--accent-dim);
+      border-radius: 5px;
+      color: var(--accent); font-size: 10.5px; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
 
-    .step-text { font-size: 13px; color: var(--muted); line-height: 1.55; padding-top: 4px; }
-    .step-text strong { color: var(--text); font-weight: 500; }
-
-    /* ── LOGS PAGE ── */
-    .stats-pills {
-      display: flex; gap: 10px; flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .pill {
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 12.5px;
-      font-weight: 500;
-      display: flex; align-items: center; gap: 6px;
-      border: 1px solid transparent;
-    }
-
-    .pill-num { font-family: 'Syne', sans-serif; font-weight: 700; }
-
-    .pill.total    { background: var(--neutral-dim); border-color: rgba(255,255,255,0.08); color: var(--text); }
-    .pill.positive { background: var(--success-dim); border-color: rgba(34,197,94,0.25); color: var(--success); }
-    .pill.negative { background: var(--error-dim);   border-color: rgba(239,68,68,0.25);  color: var(--error); }
-    .pill.neutral  { background: var(--neutral-dim); border-color: rgba(255,255,255,0.08); color: var(--muted); }
-    .pill.callback { background: var(--accent-dim);  border-color: rgba(249,115,22,0.25); color: var(--accent); }
-
-    .themes-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .themes-list { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    .theme-tag {
-      padding: 4px 10px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--card-border);
-      border-radius: 6px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Logs header */
-    .logs-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 32px;
-    }
-
-    .refresh-info {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 13px; color: var(--muted);
-    }
-
-    .refresh-countdown {
-      font-family: 'Syne', sans-serif;
-      font-weight: 600;
-      color: var(--accent);
-      font-size: 13px;
-    }
-
     /* Table */
+    .table-outer {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .table-toolbar {
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .table-toolbar-title {
+      font-size: 13px; font-weight: 600; color: var(--text);
+    }
+
+    .table-count { font-size: 12px; color: var(--text-3); }
+
     .table-wrap { overflow-x: auto; }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13.5px;
+    table { width: 100%; border-collapse: collapse; }
+
+    thead {
+      background: var(--table-head);
+      border-bottom: 1px solid var(--card-border);
     }
 
     thead th {
       text-align: left;
-      padding: 0 14px 12px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--muted);
-      letter-spacing: 0.05em;
+      padding: 10px 16px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-3);
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      border-bottom: 1px solid var(--card-border);
       white-space: nowrap;
     }
 
     tbody tr {
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      transition: background 0.15s;
-      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.035);
+      transition: background 0.12s;
     }
 
-    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody tr:hover { background: var(--table-row-hover); }
     tbody tr:last-child { border-bottom: none; }
+    tbody tr.expanded { background: var(--table-row-hover); }
 
-    td { padding: 13px 14px; vertical-align: top; }
+    td { padding: 12px 16px; vertical-align: middle; }
 
-    .td-name { font-weight: 500; color: var(--text); }
-    .td-phone { color: var(--muted); font-size: 12.5px; }
-    .td-feedback { color: var(--muted); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12.5px; }
+    .td-name  { font-weight: 500; font-size: 13px; color: var(--text); }
+    .td-phone { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+    .td-feedback {
+      max-width: 200px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      font-size: 12px; color: var(--text-2);
+    }
+    .td-date { font-size: 11.5px; color: var(--text-3); }
 
     /* Badges */
     .badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      font-size: 11.5px;
-      font-weight: 500;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px;
+      border-radius: 99px;
+      font-size: 11px; font-weight: 600;
       white-space: nowrap;
+      border: 1px solid transparent;
     }
 
-    .badge-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 
-    .badge.completed { background: var(--success-dim); color: var(--success); }
+    .badge.positive { background: var(--success-bg); border-color: var(--success-bdr); color: var(--success); }
+    .badge.positive .badge-dot { background: var(--success); }
+    .badge.negative { background: var(--error-bg);   border-color: var(--error-bdr);   color: var(--error); }
+    .badge.negative .badge-dot { background: var(--error); }
+    .badge.neutral  { background: var(--neutral-bg);  border-color: var(--neutral-bdr);  color: var(--text-2); }
+    .badge.neutral  .badge-dot { background: var(--text-3); }
+    .badge.callback { background: var(--warn-bg);   border-color: var(--warn-bdr);   color: var(--warn); }
+    .badge.callback .badge-dot { background: var(--warn); }
+    .badge.completed{ background: var(--success-bg); border-color: var(--success-bdr); color: var(--success); }
     .badge.completed .badge-dot { background: var(--success); }
-    .badge.failed    { background: var(--error-dim);   color: var(--error); }
-    .badge.failed .badge-dot { background: var(--error); }
-    .badge.initiated { background: var(--warn-dim);    color: var(--warn); }
+    .badge.failed   { background: var(--error-bg);   border-color: var(--error-bdr);   color: var(--error); }
+    .badge.failed   .badge-dot { background: var(--error); }
+    .badge.initiated{ background: var(--warn-bg);    border-color: var(--warn-bdr);    color: var(--warn); }
     .badge.initiated .badge-dot { background: var(--warn); }
+    .badge.sip      { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.25); color: #818CF8; }
+    .badge.webrtc   { background: rgba(20,184,166,0.1); border-color: rgba(20,184,166,0.25); color: #2DD4BF; }
 
-    .badge.positive  { background: var(--success-dim); color: var(--success); }
-    .badge.negative  { background: var(--error-dim);   color: var(--error); }
-    .badge.neutral   { background: var(--neutral-dim); color: var(--muted); }
-    .badge.callback  { background: var(--accent-dim);  color: var(--accent); }
+    /* Expand row */
+    .expand-row td { padding: 0 16px 14px; }
 
-    /* Expanded row */
-    .expand-row td {
-      padding: 0 14px 16px;
+    .transcript-header {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-3);
+      margin-bottom: 8px;
     }
 
     .transcript-box {
-      background: rgba(255,255,255,0.03);
+      background: #0A0D14;
       border: 1px solid var(--card-border);
       border-radius: var(--radius-sm);
-      padding: 14px;
-      font-size: 12.5px;
-      color: var(--muted);
-      line-height: 1.65;
-      max-height: 180px;
-      overflow-y: auto;
+      padding: 12px 14px;
+      font-size: 12px; color: var(--text-2); line-height: 1.65;
+      max-height: 160px; overflow-y: auto;
       white-space: pre-wrap;
     }
 
     .transcript-box::-webkit-scrollbar { width: 4px; }
-    .transcript-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    .transcript-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.09); border-radius: 2px; }
 
-    .action-btn {
-      padding: 5px 11px;
+    /* Action buttons */
+    .btn-action {
+      padding: 5px 10px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 500;
       cursor: pointer;
       border: 1px solid transparent;
-      transition: all 0.15s;
-      font-family: 'DM Sans', sans-serif;
+      transition: all 0.13s;
+      font-family: var(--font);
+      white-space: nowrap;
     }
 
     .btn-play {
       background: var(--accent-dim);
-      border-color: rgba(249,115,22,0.3);
+      border-color: var(--accent-border);
       color: var(--accent);
     }
     .btn-play:hover { background: rgba(249,115,22,0.2); }
 
+    .btn-expand {
+      background: var(--neutral-bg);
+      border-color: var(--neutral-bdr);
+      color: var(--text-2);
+    }
+    .btn-expand:hover { background: rgba(148,163,184,0.14); color: var(--text); }
+
     /* Empty state */
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
+      padding: 56px 20px;
     }
-    .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
-    .empty-text { font-size: 14px; }
+    .empty-icon { font-size: 36px; opacity: 0.2; margin-bottom: 10px; }
+    .empty-title { font-size: 14px; font-weight: 600; color: var(--text-2); margin-bottom: 4px; }
+    .empty-desc  { font-size: 12.5px; color: var(--text-3); }
 
-    /* Loading spinner */
+    /* Loading */
     .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.15);
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.12);
       border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: inline-block;
+      animation: spin 0.65s linear infinite;
+      display: inline-block; flex-shrink: 0;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    .loading-row td {
+      text-align: center;
+      padding: 48px 0;
+      color: var(--text-3);
+      font-size: 13px;
+    }
+
     /* ── PROFILE PANEL ── */
-    .panel-overlay {
+    .overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.5);
       backdrop-filter: blur(4px);
       z-index: 100;
       display: none;
-      opacity: 0;
-      transition: opacity 0.25s ease;
     }
-
-    .panel-overlay.open { display: flex; opacity: 1; }
+    .overlay.open { display: block; }
 
     .profile-panel {
       position: fixed;
       top: 0; right: 0;
-      width: 360px;
-      height: 100vh;
+      width: 340px; height: 100vh;
       background: #111827;
       border-left: 1px solid var(--card-border);
       z-index: 101;
-      padding: 32px 28px;
+      padding: 28px 24px;
       transform: translateX(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+      transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column; gap: 20px;
     }
-
     .profile-panel.open { transform: translateX(0); }
 
-    .panel-header {
+    .panel-hd {
       display: flex; align-items: center; justify-content: space-between;
     }
-
-    .panel-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
+    .panel-title { font-size: 16px; font-weight: 700; color: var(--text); }
     .panel-close {
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--card-border);
-      color: var(--muted);
-      font-size: 16px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
+      width: 30px; height: 30px; border-radius: 7px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+      color: var(--text-2); font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.13s;
     }
-    .panel-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+    .panel-close:hover { background: rgba(255,255,255,0.09); color: var(--text); }
 
-    .avatar-large {
-      width: 72px; height: 72px;
-      border-radius: 50%;
+    .avatar-lg {
+      width: 64px; height: 64px; border-radius: 50%;
       background: linear-gradient(135deg, #F97316, #7C3AED);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 26px;
-      color: #fff;
+      font-weight: 700; font-size: 24px; color: #fff;
       margin: 0 auto;
-      box-shadow: 0 0 32px rgba(249,115,22,0.25);
     }
 
-    .did-display {
-      background: rgba(255,255,255,0.04);
+    .did-box {
+      background: rgba(255,255,255,0.03);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-sm);
       padding: 12px 14px;
     }
-
-    .did-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
-    .did-number { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); }
-    .did-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .did-label { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 4px; }
+    .did-num   { font-size: 14px; font-weight: 600; color: var(--text); }
+    .did-sub   { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 
     .btn-save {
-      padding: 12px 20px;
-      background: linear-gradient(135deg, #F97316, #EA580C);
-      border: none;
-      border-radius: var(--radius-sm);
-      color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 16px rgba(249,115,22,0.25);
+      padding: 11px 18px;
+      background: var(--accent);
+      border: none; border-radius: var(--radius-sm);
+      color: #fff; font-family: var(--font); font-size: 13.5px; font-weight: 600;
+      cursor: pointer; transition: all 0.18s; width: 100%;
     }
-    .btn-save:hover { box-shadow: 0 6px 24px rgba(249,115,22,0.4); transform: translateY(-1px); }
+    .btn-save:hover { background: #EA580C; }
 
     /* ── RECORDING MODAL ── */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.65);
       backdrop-filter: blur(8px);
       z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.2s;
+      display: none; align-items: center; justify-content: center;
     }
-    .modal-overlay.open { display: flex; opacity: 1; }
+    .modal-overlay.open { display: flex; }
 
     .modal {
       background: #111827;
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 28px;
-      width: 460px;
-      max-width: 92vw;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-      transform: scale(0.95);
-      transition: transform 0.2s;
+      border-radius: 14px;
+      padding: 24px;
+      width: 440px; max-width: 92vw;
+      box-shadow: 0 24px 72px rgba(0,0,0,0.55);
+      animation: modalIn 0.2s ease;
     }
-    .modal-overlay.open .modal { transform: scale(1); }
+    @keyframes modalIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .modal-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
+    .modal-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .modal-title { font-size: 14px; font-weight: 600; color: var(--text); }
     .modal-close {
-      width: 30px; height: 30px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--card-border);
-      color: var(--muted);
-      font-size: 15px;
-      cursor: pointer;
+      width: 28px; height: 28px; border-radius: 7px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+      color: var(--text-2); font-size: 13px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
     }
-    .modal-close:hover { color: var(--text); background: rgba(255,255,255,0.1); }
+    .modal-close:hover { color: var(--text); }
 
     .modal-customer {
-      background: rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      margin-bottom: 18px;
+      padding: 10px 13px; margin-bottom: 14px;
     }
-    .modal-cname { font-weight: 600; font-size: 14px; color: var(--text); }
-    .modal-cphone { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .modal-cname  { font-weight: 600; font-size: 13.5px; color: var(--text); }
+    .modal-cphone { font-size: 12px; color: var(--text-2); margin-top: 2px; }
 
     audio {
       width: 100%;
-      margin-top: 4px;
-      border-radius: 8px;
+      border-radius: 7px;
       accent-color: var(--accent);
     }
 
-    audio::-webkit-media-controls-panel { background: rgba(255,255,255,0.05); }
-
-    .modal-loading { text-align: center; padding: 24px; color: var(--muted); font-size: 13px; }
+    .modal-loading { text-align: center; padding: 20px; color: var(--text-3); font-size: 13px; }
 
     /* ── TOASTS ── */
-    .toast-container {
-      position: fixed;
-      top: 20px; right: 20px;
-      z-index: 999;
-      display: flex; flex-direction: column; gap: 10px;
+    .toasts {
+      position: fixed; top: 16px; right: 16px;
+      z-index: 999; display: flex; flex-direction: column; gap: 8px;
       pointer-events: none;
     }
 
@@ -733,121 +857,138 @@
       background: #1E2737;
       border: 1px solid var(--card-border);
       border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      font-size: 13.5px;
-      color: var(--text);
+      padding: 11px 14px;
+      font-size: 13px; color: var(--text);
       pointer-events: auto;
-      max-width: 320px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      display: flex; align-items: center; gap: 10px;
-      animation: slideIn 0.3s ease;
+      max-width: 300px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      display: flex; align-items: center; gap: 9px;
+      animation: toastIn 0.25s ease;
     }
+    @keyframes toastIn  { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes toastOut { to   { transform: translateX(110%); opacity: 0; } }
 
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    @keyframes slideOut { to { transform: translateX(110%); opacity: 0; } }
+    .toast.success { border-color: var(--success-bdr); }
+    .toast.error   { border-color: var(--error-bdr); }
+    .toast-icon { flex-shrink: 0; font-size: 15px; }
 
-    .toast.success { border-color: rgba(34,197,94,0.3); }
-    .toast.error   { border-color: rgba(239,68,68,0.3); }
+    /* Divider */
+    .divider { height: 1px; background: var(--card-border); margin: 8px 0; }
 
-    .toast-icon { font-size: 16px; flex-shrink: 0; }
-
-    /* Util */
-    .d-flex { display: flex; align-items: center; gap: 10px; }
-    .ml-auto { margin-left: auto; }
-    .text-muted { color: var(--muted); font-size: 12.5px; }
-    .mt-16 { margin-top: 16px; }
-    .mt-24 { margin-top: 24px; }
-
-    /* Scrollbar for logs */
-    .main::-webkit-scrollbar { width: 6px; }
-
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .sidebar { display: none; }
-      .calls-grid { grid-template-columns: 1fr; }
+      .calls-layout { grid-template-columns: 1fr; }
+      .stat-cards { grid-template-columns: repeat(3,1fr); }
+      .summary-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 <div class="app">
-  <!-- SIDEBAR -->
+
+  <!-- ── SIDEBAR ── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-mark">V</div>
-      <div class="logo-title">Venkanna Motors</div>
-      <div class="logo-sub">AI Feedback System</div>
+      <div class="logo-row">
+        <div class="logo-mark">V</div>
+        <div class="logo-text">
+          <div class="logo-title">Venkanna Motors</div>
+          <div class="logo-sub">AI Feedback System</div>
+        </div>
+      </div>
       <div class="live-badge">
         <span class="live-dot"></span>
         System Live
       </div>
     </div>
 
-    <nav class="nav">
-      <div class="nav-item active" onclick="showPage('calls')">
-        <span class="nav-icon">📞</span>
-        Calls
+    <div class="nav-section">
+      <div class="nav-label">Navigation</div>
+      <div class="nav-item active" onclick="showPage('calls')" id="nav-calls">
+        <span class="nav-icon">📞</span> Calls
       </div>
-      <div class="nav-item" onclick="showPage('logs')">
-        <span class="nav-icon">📋</span>
-        Logs
+      <div class="nav-item" onclick="showPage('logs')" id="nav-logs">
+        <span class="nav-icon">📋</span> Logs
       </div>
-    </nav>
+    </div>
 
-    <div class="sidebar-profile">
+    <div class="sidebar-footer">
       <div class="profile-btn" onclick="openProfile()">
         <div class="avatar" id="sidebarAvatar">?</div>
         <div class="profile-info">
           <div class="profile-name" id="sidebarName">Your Name</div>
-          <div class="profile-did" id="sidebarDid">Loading…</div>
+          <div class="profile-did" id="sidebarDid">+91 117 136 6871</div>
         </div>
-        <span class="profile-edit-icon">✎</span>
+        <span class="profile-edit">✎</span>
       </div>
     </div>
   </aside>
 
-  <!-- MAIN -->
+  <!-- ── MAIN CONTENT ── -->
   <main class="main">
+
     <!-- CALLS PAGE -->
     <div class="page active" id="page-calls">
-      <div class="page-header">
-        <div class="page-title">Initiate Call</div>
-        <div class="page-subtitle">Trigger the AI agent to call a customer for feedback collection</div>
+      <div class="page-hd">
+        <div class="page-hd-left">
+          <div class="page-title">Initiate Call</div>
+          <div class="page-sub">Trigger the AI agent Raajesh to call a customer for service feedback</div>
+        </div>
       </div>
 
-      <div class="calls-grid">
+      <div class="calls-layout">
         <div class="card">
-          <div class="card-title">📞 New Outbound Call</div>
+          <div class="card-title">
+            <span class="card-title-icon">📞</span>
+            New Outbound Call
+          </div>
           <div class="form-group">
             <label>Customer Name</label>
-            <input type="text" id="customerName" placeholder="e.g. Ravi Kumar" />
+            <input type="text" id="customerName" placeholder="e.g. Ravi Kumar" autocomplete="off" />
           </div>
           <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" id="phoneNumber" placeholder="e.g. 9876543210" maxlength="10" />
+            <label>Phone Number (10 digits)</label>
+            <input type="tel" id="phoneNumber" placeholder="e.g. 9876543210" maxlength="10" autocomplete="off" />
           </div>
           <button class="btn-primary" id="callBtn" onclick="triggerCall()">
-            <span>📞</span> Trigger Call →
+            <span>📞</span> Trigger Call
           </button>
           <div class="call-result" id="callResult"></div>
         </div>
 
         <div class="card">
-          <div class="card-title">⚡ How It Works</div>
+          <div class="card-title">
+            <span class="card-title-icon">⚡</span>
+            How It Works
+          </div>
           <div class="steps">
             <div class="step">
               <div class="step-num">1</div>
-              <div class="step-text"><strong>Enter details</strong> — Customer name and 10-digit mobile number</div>
+              <div class="step-content">
+                <div class="step-title">Enter Details</div>
+                <div class="step-desc">Customer name and 10-digit mobile number</div>
+              </div>
             </div>
             <div class="step">
               <div class="step-num">2</div>
-              <div class="step-text"><strong>Trigger</strong> — AI agent Raajesh dials via Vobiz SIP</div>
+              <div class="step-content">
+                <div class="step-title">AI Calls Customer</div>
+                <div class="step-desc">Raajesh dials via Vobiz SIP in seconds</div>
+              </div>
             </div>
             <div class="step">
               <div class="step-num">3</div>
-              <div class="step-text"><strong>Conversation</strong> — Raajesh collects ratings and feedback</div>
+              <div class="step-content">
+                <div class="step-title">Conversation</div>
+                <div class="step-desc">Collects ratings, comments &amp; feedback</div>
+              </div>
             </div>
             <div class="step">
               <div class="step-num">4</div>
-              <div class="step-text"><strong>Logged</strong> — Sentiment, transcript and recording saved automatically</div>
+              <div class="step-content">
+                <div class="step-title">Auto Logged</div>
+                <div class="step-desc">Sentiment, transcript &amp; recording saved</div>
+              </div>
             </div>
           </div>
         </div>
@@ -856,59 +997,96 @@
 
     <!-- LOGS PAGE -->
     <div class="page" id="page-logs">
-      <div class="logs-header">
-        <div>
+      <div class="page-hd">
+        <div class="page-hd-left">
           <div class="page-title">Call Logs</div>
-          <div class="page-subtitle">All outbound feedback calls with sentiment analysis</div>
+          <div class="page-sub">All outbound feedback calls with sentiment analysis</div>
         </div>
-        <div class="refresh-info">
-          <span>Auto-refresh in</span>
-          <span class="refresh-countdown" id="countdown">30s</span>
+        <div class="logs-hd-right">
+          <span class="refresh-label">Auto-refresh in</span>
+          <span class="refresh-cd" id="countdown">30s</span>
           <button class="btn-secondary" onclick="loadLogs()">↻ Refresh</button>
         </div>
       </div>
 
-      <!-- AI Summary -->
-      <div class="card" style="margin-bottom: 20px;">
-        <div class="card-title">🤖 AI Summary</div>
-        <div class="stats-pills" id="statsPills">
-          <div class="pill total"><span class="pill-num" id="statTotal">0</span> Total</div>
-          <div class="pill positive"><span class="pill-num" id="statPos">0</span> Positive</div>
-          <div class="pill negative"><span class="pill-num" id="statNeg">0</span> Negative</div>
-          <div class="pill neutral"><span class="pill-num" id="statNeutral">0</span> Neutral</div>
-          <div class="pill callback"><span class="pill-num" id="statCallback">0</span> Callback</div>
+      <!-- Stat Cards -->
+      <div class="stat-cards" id="statCards">
+        <div class="stat-card total">
+          <div class="stat-card-label">Total</div>
+          <div class="stat-card-num" id="statTotal">—</div>
+          <div class="stat-card-bar"><div class="stat-card-fill" id="barTotal" style="width:100%"></div></div>
         </div>
-        <div class="themes-label">Feedback Themes</div>
-        <div class="themes-list" id="themesList">
-          <div class="theme-tag">No data yet</div>
+        <div class="stat-card positive">
+          <div class="stat-card-label">Positive</div>
+          <div class="stat-card-num" id="statPos">—</div>
+          <div class="stat-card-bar"><div class="stat-card-fill" id="barPos" style="width:0%"></div></div>
+        </div>
+        <div class="stat-card negative">
+          <div class="stat-card-label">Negative</div>
+          <div class="stat-card-num" id="statNeg">—</div>
+          <div class="stat-card-bar"><div class="stat-card-fill" id="barNeg" style="width:0%"></div></div>
+        </div>
+        <div class="stat-card neutral">
+          <div class="stat-card-label">Neutral</div>
+          <div class="stat-card-num" id="statNeutral">—</div>
+          <div class="stat-card-bar"><div class="stat-card-fill" id="barNeutral" style="width:0%"></div></div>
+        </div>
+        <div class="stat-card callback">
+          <div class="stat-card-label">Callback</div>
+          <div class="stat-card-num" id="statCallback">—</div>
+          <div class="stat-card-bar"><div class="stat-card-fill" id="barCallback" style="width:0%"></div></div>
         </div>
       </div>
 
-      <!-- Calls table -->
-      <div class="card" id="logsCard">
-        <div class="card-title d-flex">
-          Calls
-          <span class="ml-auto text-muted" id="logsCount">—</span>
+      <!-- AI Summary Card -->
+      <div class="summary-card">
+        <div class="summary-header" onclick="toggleSummary()">
+          <div class="summary-title">
+            🤖 AI Summary
+            <span class="summary-ai-badge">Insights</span>
+          </div>
+          <div class="summary-header-right">
+            <span class="summary-ts" id="summaryTs"></span>
+            <span class="summary-toggle" id="summaryToggle">▾</span>
+          </div>
+        </div>
+        <div class="summary-body open" id="summaryBody">
+          <div id="summaryContent">
+            <div class="summary-placeholder">
+              <div class="summary-placeholder-icon">🧠</div>
+              <div class="summary-placeholder-text">Load call logs then generate an AI summary to see insights</div>
+              <button class="btn-gen-summary" id="genSummaryBtn" onclick="generateSummary()">
+                <span>✨</span> Generate AI Summary
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calls Table -->
+      <div class="table-outer">
+        <div class="table-toolbar">
+          <span class="table-toolbar-title">Calls</span>
+          <span class="table-count" id="logsCount">Loading…</span>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Customer</th>
-                <th>Phone</th>
                 <th>Status</th>
                 <th>Sentiment</th>
-                <th>Feedback</th>
-                <th>Callback?</th>
+                <th>Takeaway</th>
+                <th>Callback</th>
+                <th>Duration</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="logsBody">
-              <tr>
+              <tr class="loading-row">
                 <td colspan="7">
-                  <div class="empty-state">
-                    <div class="empty-icon">📵</div>
-                    <div class="empty-text">No calls yet. Trigger one from the Calls page.</div>
+                  <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                    <div class="spinner"></div> Loading calls…
                   </div>
                 </td>
               </tr>
@@ -917,39 +1095,36 @@
         </div>
       </div>
     </div>
+
   </main>
 </div>
 
 <!-- PROFILE PANEL -->
-<div class="panel-overlay" id="panelOverlay" onclick="closeProfile()"></div>
+<div class="overlay" id="overlay" onclick="closeProfile()"></div>
 <div class="profile-panel" id="profilePanel">
-  <div class="panel-header">
+  <div class="panel-hd">
     <div class="panel-title">Profile</div>
     <button class="panel-close" onclick="closeProfile()">✕</button>
   </div>
-
-  <div style="text-align:center;">
-    <div class="avatar-large" id="panelAvatar">?</div>
-  </div>
-
-  <div>
+  <div><div class="avatar-lg" id="panelAvatar">?</div></div>
+  <div class="form-group" style="margin:0">
     <label>Your Name</label>
-    <input type="text" id="profileName" placeholder="Enter your name" />
+    <input type="text" id="profileNameInput" placeholder="Enter your name" />
   </div>
-
-  <div class="did-display">
-    <div class="did-label">DID Number (Outbound)</div>
-    <div class="did-number" id="didNumber">Loading…</div>
-    <div class="did-sub">Vobiz SIP Trunk</div>
+  <div class="did-box">
+    <div class="did-label">DID Number (Outbound Caller)</div>
+    <div class="did-num">+91 117 136 6871</div>
+    <div class="did-sub">Vobiz SIP Trunk · Active</div>
   </div>
-
-  <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+  <div style="margin-top:auto">
+    <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+  </div>
 </div>
 
 <!-- RECORDING MODAL -->
-<div class="modal-overlay" id="recordingModal">
+<div class="modal-overlay" id="recordingModal" onclick="closeModal(event)">
   <div class="modal">
-    <div class="modal-header">
+    <div class="modal-hd">
       <div class="modal-title">🎵 Call Recording</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
@@ -958,59 +1133,63 @@
       <div class="modal-cphone" id="modalPhone">—</div>
     </div>
     <div id="modalContent">
-      <div class="modal-loading"><div class="spinner"></div><div style="margin-top:10px">Loading recording…</div></div>
+      <div class="modal-loading"><div class="spinner"></div></div>
     </div>
   </div>
 </div>
 
-<!-- TOAST CONTAINER -->
-<div class="toast-container" id="toasts"></div>
+<!-- TOASTS -->
+<div class="toasts" id="toasts"></div>
 
 <script>
-  const BASE = window.location.origin;
-  let countdown = 30;
-  let countdownTimer;
-  let expandedRow = null;
+  'use strict';
 
-  // ── PAGE NAVIGATION ──
+  const BASE = window.location.origin;
+  const DID  = '+91 117 136 6871';
+
+  // Shared call data cache
+  let _cachedCalls = [];
+  let _countdownTimer = null;
+  let _countdown = 30;
+  let _summaryOpen = true;
+  let _expandedCallId = null;
+
+  // ── PAGE NAVIGATION ─────────────────────────────────────────────────────────
   function showPage(name) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
-
-    const navItems = document.querySelectorAll('.nav-item');
-    if (name === 'calls') navItems[0].classList.add('active');
-    if (name === 'logs')  { navItems[1].classList.add('active'); loadLogs(); }
+    document.getElementById('nav-' + name).classList.add('active');
+    if (name === 'logs') loadLogs();
   }
 
-  // ── TOAST ──
+  // ── TOASTS ──────────────────────────────────────────────────────────────────
   function toast(msg, type = 'info') {
-    const container = document.getElementById('toasts');
+    const c = document.getElementById('toasts');
     const el = document.createElement('div');
-    el.className = `toast ${type}`;
+    el.className = 'toast ' + type;
     const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-    el.innerHTML = `<span class="toast-icon">${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
-    container.appendChild(el);
+    el.innerHTML = `<span class="toast-icon">${icons[type] || '•'}</span><span>${esc(msg)}</span>`;
+    c.appendChild(el);
     setTimeout(() => {
-      el.style.animation = 'slideOut 0.3s ease forwards';
-      setTimeout(() => el.remove(), 320);
+      el.style.animation = 'toastOut 0.25s ease forwards';
+      setTimeout(() => el.remove(), 260);
     }, 3500);
   }
 
-  // ── OUTBOUND CALL ──
+  // ── OUTBOUND CALL ────────────────────────────────────────────────────────────
   async function triggerCall() {
     const name  = document.getElementById('customerName').value.trim();
     const phone = document.getElementById('phoneNumber').value.trim();
     const result = document.getElementById('callResult');
     const btn    = document.getElementById('callBtn');
 
-    if (!name)  { toast('Enter customer name', 'error'); return; }
-    if (!/^\d{10}$/.test(phone)) { toast('Enter valid 10-digit number', 'error'); return; }
+    if (!name)           { toast('Please enter customer name', 'error'); return; }
+    if (!/^\d{10}$/.test(phone)) { toast('Enter a valid 10-digit number', 'error'); return; }
 
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Initiating…';
     result.className = 'call-result';
-    result.style.display = 'none';
 
     try {
       const res = await fetch(`${BASE}/outbound/call`, {
@@ -1019,67 +1198,91 @@
         body: JSON.stringify({ phone_number: `+91${phone}`, customer_name: name }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Call failed');
+      if (!res.ok) throw new Error(data.detail || 'Call initiation failed');
 
       result.className = 'call-result success';
-      result.innerHTML = `✅ Call initiated! Raajesh is calling <strong>+91${phone}</strong>`;
-      result.style.display = 'block';
+      result.innerHTML = `✅ Call initiated! Raajesh is calling <strong>+91 ${phone}</strong>`;
       toast('Call triggered successfully!', 'success');
       document.getElementById('customerName').value = '';
-      document.getElementById('phoneNumber').value = '';
+      document.getElementById('phoneNumber').value  = '';
     } catch (err) {
       result.className = 'call-result error';
-      result.innerHTML = `❌ ${err.message}`;
-      result.style.display = 'block';
+      result.innerHTML = `❌ ${esc(err.message)}`;
       toast(err.message, 'error');
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<span>📞</span> Trigger Call →';
+      btn.innerHTML = '<span>📞</span> Trigger Call';
     }
   }
 
-  // ── LOGS ──
+  // ── LOGS ─────────────────────────────────────────────────────────────────────
   async function loadLogs() {
-    document.getElementById('logsBody').innerHTML = `
-      <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">
-        <div class="spinner" style="margin:0 auto"></div>
-      </td></tr>`;
-    countdown = 30;
-    clearInterval(countdownTimer);
-    startCountdown();
+    clearInterval(_countdownTimer);
+    _countdown = 30;
+    updateCountdown();
+
+    setLoading(true);
 
     try {
       const res = await fetch(`${BASE}/logs/calls`);
-      if (!res.ok) throw new Error('Failed to fetch logs');
-      const calls = await res.json();
-      renderLogs(calls);
-      updateStats(calls);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      // API returns {total, next, previous, results: [...]} — extract array
+      const calls = Array.isArray(data) ? data : (data.results || []);
+      _cachedCalls = calls;
+
+      renderStats(calls);
+      renderTable(calls);
+      document.getElementById('logsCount').textContent = `${calls.length} record${calls.length !== 1 ? 's' : ''}`;
     } catch (err) {
+      _cachedCalls = [];
+      renderStats([]);
       document.getElementById('logsBody').innerHTML = `
         <tr><td colspan="7">
           <div class="empty-state">
             <div class="empty-icon">⚠️</div>
-            <div class="empty-text">${err.message}</div>
+            <div class="empty-title">Failed to load logs</div>
+            <div class="empty-desc">${esc(err.message)}</div>
+          </div>
+        </td></tr>`;
+      document.getElementById('logsCount').textContent = 'Error';
+    } finally {
+      setLoading(false);
+      startCountdown();
+    }
+  }
+
+  function setLoading(on) {
+    if (on) {
+      document.getElementById('logsBody').innerHTML = `
+        <tr class="loading-row"><td colspan="7">
+          <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+            <div class="spinner"></div> Fetching call logs…
           </div>
         </td></tr>`;
     }
   }
 
   function startCountdown() {
-    document.getElementById('countdown').textContent = countdown + 's';
-    countdownTimer = setInterval(() => {
-      countdown--;
-      document.getElementById('countdown').textContent = countdown + 's';
-      if (countdown <= 0) loadLogs();
+    _countdownTimer = setInterval(() => {
+      _countdown--;
+      updateCountdown();
+      if (_countdown <= 0) loadLogs();
     }, 1000);
   }
 
-  function updateStats(calls) {
+  function updateCountdown() {
+    document.getElementById('countdown').textContent = _countdown + 's';
+  }
+
+  // ── STATS ─────────────────────────────────────────────────────────────────────
+  function renderStats(calls) {
     const total    = calls.length;
-    const positive = calls.filter(c => c.sentiment === 'positive').length;
-    const negative = calls.filter(c => c.sentiment === 'negative').length;
-    const neutral  = calls.filter(c => c.sentiment === 'neutral').length;
-    const callback = calls.filter(c => c.callback_requested).length;
+    const positive = calls.filter(c => (c.sentiment || '').toLowerCase() === 'positive').length;
+    const negative = calls.filter(c => (c.sentiment || '').toLowerCase() === 'negative').length;
+    const neutral  = calls.filter(c => (c.sentiment || '').toLowerCase() === 'neutral').length;
+    const callback = calls.filter(c => c.callback).length;
 
     document.getElementById('statTotal').textContent    = total;
     document.getElementById('statPos').textContent      = positive;
@@ -1087,166 +1290,402 @@
     document.getElementById('statNeutral').textContent  = neutral;
     document.getElementById('statCallback').textContent = callback;
 
-    // Derive themes from feedback text
-    const themes = deriveThemes(calls);
-    const themesList = document.getElementById('themesList');
-    themesList.innerHTML = themes.length
-      ? themes.map(t => `<div class="theme-tag">${t}</div>`).join('')
-      : `<div class="theme-tag">No data yet</div>`;
+    const pct = (n) => total ? Math.max(4, Math.round(n / total * 100)) + '%' : '0%';
+    document.getElementById('barTotal').style.width    = '100%';
+    document.getElementById('barPos').style.width      = pct(positive);
+    document.getElementById('barNeg').style.width      = pct(negative);
+    document.getElementById('barNeutral').style.width  = pct(neutral);
+    document.getElementById('barCallback').style.width = pct(callback);
   }
 
-  function deriveThemes(calls) {
-    const keywords = ['service', 'wait', 'staff', 'price', 'quality', 'clean', 'fast', 'slow', 'excellent', 'poor', 'friendly', 'rude'];
-    const found = {};
-    calls.forEach(c => {
-      const text = (c.feedback_summary || c.customer_feedback || '').toLowerCase();
-      keywords.forEach(kw => {
-        if (text.includes(kw)) found[kw] = (found[kw] || 0) + 1;
-      });
-    });
-    return Object.entries(found)
-      .sort((a,b) => b[1]-a[1])
-      .slice(0,8)
-      .map(([kw]) => kw.charAt(0).toUpperCase() + kw.slice(1));
-  }
-
-  function renderLogs(calls) {
+  // ── TABLE ─────────────────────────────────────────────────────────────────────
+  function renderTable(calls) {
     const body = document.getElementById('logsBody');
-    document.getElementById('logsCount').textContent = `${calls.length} record${calls.length !== 1 ? 's' : ''}`;
+    _expandedCallId = null;
 
     if (!calls.length) {
       body.innerHTML = `<tr><td colspan="7">
         <div class="empty-state">
           <div class="empty-icon">📵</div>
-          <div class="empty-text">No calls yet. Trigger one from the Calls page.</div>
+          <div class="empty-title">No calls yet</div>
+          <div class="empty-desc">Trigger a call from the Calls page to see data here</div>
         </div></td></tr>`;
       return;
     }
 
     body.innerHTML = '';
     calls.forEach(call => {
-      const status    = (call.status || 'unknown').toLowerCase();
-      const sentiment = (call.sentiment || 'neutral').toLowerCase();
-      const feedback  = call.feedback_summary || call.customer_feedback || '—';
-      const callback  = call.callback_requested ? '<span class="badge callback">Yes</span>' : '<span style="color:var(--muted);font-size:12px">No</span>';
-      const phone     = call.phone_number || call.to_number || '—';
+      const callId    = call.callId || call.call_id || '';
       const name      = call.customer_name || '—';
+      const phone     = call.phone_number  || '—';
+      const sentiment = (call.sentiment || '').toLowerCase();
+      const status    = (call.endReason || 'unknown').toLowerCase();
+      const takeaway  = call.takeaway || call.shortSummary || '—';
+      const duration  = call.duration || '—';
+      const cbFlag    = call.callback;
 
-      const statusBadge    = `<span class="badge ${status}"><span class="badge-dot"></span>${status}</span>`;
-      const sentimentBadge = sentiment !== 'null' && sentiment !== 'none' && sentiment
-        ? `<span class="badge ${sentiment}">${sentiment}</span>`
-        : `<span style="color:var(--muted);font-size:12px">—</span>`;
+      // Status badge: map endReason
+      let statusClass = 'initiated';
+      if (status === 'hangup' || status === 'user_hangup' || status === 'agent_hangup') statusClass = 'completed';
+      else if (status.includes('error') || status.includes('fail')) statusClass = 'failed';
+
+      const sentimentBadge = sentiment && sentiment !== 'null' && sentiment !== 'none'
+        ? `<span class="badge ${sentiment}"><span class="badge-dot"></span>${cap(sentiment)}</span>`
+        : `<span style="color:var(--text-3);font-size:12px">—</span>`;
+
+      const cbBadge = cbFlag
+        ? `<span class="badge callback"><span class="badge-dot"></span>Yes</span>`
+        : `<span style="color:var(--text-3);font-size:12px">No</span>`;
 
       const tr = document.createElement('tr');
-      tr.dataset.callId = call.call_id || call.id || '';
-      tr.dataset.name   = name;
-      tr.dataset.phone  = phone;
+      tr.dataset.callId = callId;
       tr.innerHTML = `
         <td>
-          <div class="td-name">${escHtml(name)}</div>
+          <div class="td-name">${esc(name)}</div>
+          <div class="td-phone">${esc(phone)}</div>
         </td>
-        <td><div class="td-phone">${escHtml(phone)}</div></td>
-        <td>${statusBadge}</td>
+        <td><span class="badge ${statusClass}"><span class="badge-dot"></span>${cap(statusClass)}</span></td>
         <td>${sentimentBadge}</td>
-        <td><div class="td-feedback">${escHtml(feedback)}</div></td>
-        <td>${callback}</td>
+        <td><div class="td-feedback" title="${esc(takeaway)}">${esc(takeaway)}</div></td>
+        <td>${cbBadge}</td>
+        <td><span class="td-date">${esc(duration)}</span></td>
         <td>
-          <button class="action-btn btn-play" onclick="openRecording('${escHtml(tr.dataset.callId)}','${escHtml(name)}','${escHtml(phone)}');event.stopPropagation()">▶ Play</button>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:nowrap;">
+            <button class="btn-action btn-expand" onclick="toggleExpand(event,'${esc(callId)}')">↕ Details</button>
+            <button class="btn-action btn-play" onclick="openRecording(event,'${esc(callId)}','${esc(name)}','${esc(phone)}')">▶ Play</button>
+          </div>
         </td>`;
-
-      tr.addEventListener('click', () => toggleExpand(tr, call));
       body.appendChild(tr);
     });
   }
 
-  function toggleExpand(tr, call) {
-    const existingExpand = document.getElementById('expandRow');
-    if (existingExpand) {
-      existingExpand.remove();
-      if (expandedRow === tr) { expandedRow = null; return; }
+  async function toggleExpand(e, callId) {
+    e.stopPropagation();
+
+    // Remove existing expand row
+    const existing = document.getElementById('expandRow');
+    if (existing) {
+      existing.remove();
+      if (_expandedCallId === callId) { _expandedCallId = null; return; }
     }
-    expandedRow = tr;
-    const transcript = call.transcript || call.messages || null;
+
+    _expandedCallId = callId;
+    const tr = document.querySelector(`tr[data-call-id="${callId}"]`);
+    if (!tr) return;
+
     const expandTr = document.createElement('tr');
     expandTr.id = 'expandRow';
-    expandTr.className = 'expand-row';
+    expandTr.className = 'expanded';
     expandTr.innerHTML = `<td colspan="7">
-      <div class="transcript-box">${transcript ? escHtml(typeof transcript === 'string' ? transcript : JSON.stringify(transcript, null, 2)) : 'No transcript available.'}</div>
+      <div class="transcript-header">Transcript</div>
+      <div class="transcript-box" id="transcriptContent">
+        <div style="display:flex;gap:8px;align-items:center;color:var(--text-3);">
+          <div class="spinner"></div> Loading transcript…
+        </div>
+      </div>
     </td>`;
     tr.after(expandTr);
+
+    // Fetch transcript
+    try {
+      const res = await fetch(`${BASE}/logs/calls/${callId}/messages`);
+      if (!res.ok) throw new Error('Not available');
+      const data = await res.json();
+      const msgs = data.messages || [];
+
+      if (!msgs.length) {
+        document.getElementById('transcriptContent').textContent = 'No transcript available for this call.';
+        return;
+      }
+
+      const text = msgs.map(m => `[${cap(m.role)}] ${m.text}`).join('\n\n');
+      document.getElementById('transcriptContent').textContent = text;
+    } catch {
+      document.getElementById('transcriptContent').textContent = 'Transcript not available.';
+    }
   }
 
-  // ── RECORDING MODAL ──
-  async function openRecording(callId, name, phone) {
-    if (!callId || callId === 'null' || callId === 'undefined') {
-      toast('No recording available for this call', 'error');
-      return;
-    }
-    document.getElementById('modalName').textContent  = name || '—';
+  // ── RECORDING MODAL ────────────────────────────────────────────────────────────
+  async function openRecording(e, callId, name, phone) {
+    e.stopPropagation();
+    if (!callId || callId === 'null') { toast('No recording available', 'error'); return; }
+
+    document.getElementById('modalName').textContent  = name  || '—';
     document.getElementById('modalPhone').textContent = phone || '—';
-    document.getElementById('modalContent').innerHTML = `
-      <div class="modal-loading"><div class="spinner"></div><div style="margin-top:10px">Loading recording…</div></div>`;
+    document.getElementById('modalContent').innerHTML = `<div class="modal-loading"><div class="spinner"></div></div>`;
     document.getElementById('recordingModal').classList.add('open');
 
     try {
       const url = `${BASE}/logs/calls/${callId}/recording`;
       const res = await fetch(url, { method: 'HEAD' });
       if (!res.ok) throw new Error('Recording not found');
-      document.getElementById('modalContent').innerHTML = `<audio controls src="${url}" preload="metadata"></audio>`;
+      document.getElementById('modalContent').innerHTML = `<audio controls src="${url}" preload="auto"></audio>`;
     } catch {
-      document.getElementById('modalContent').innerHTML = `<div class="modal-loading" style="color:var(--error)">Recording not available</div>`;
+      document.getElementById('modalContent').innerHTML = `
+        <div class="modal-loading" style="color:var(--error)">Recording not available for this call</div>`;
     }
   }
 
-  function closeModal() {
+  function closeModal(e) {
+    if (e && e.target !== document.getElementById('recordingModal')) return;
     document.getElementById('recordingModal').classList.remove('open');
     document.getElementById('modalContent').innerHTML = '';
   }
 
-  document.getElementById('recordingModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
+  document.getElementById('recordingModal').addEventListener('click', closeModal);
 
-  // ── PROFILE ──
-  const DID_NUMBER = '+91 117 136 6871'; // from VOBIZ_FROM_NUMBER
+  // ── AI SUMMARY ────────────────────────────────────────────────────────────────
+  function toggleSummary() {
+    _summaryOpen = !_summaryOpen;
+    const body    = document.getElementById('summaryBody');
+    const toggle  = document.getElementById('summaryToggle');
+    body.classList.toggle('open', _summaryOpen);
+    toggle.classList.toggle('open', _summaryOpen);
+  }
 
+  async function generateSummary() {
+    if (!_cachedCalls.length) { toast('Load call logs first', 'error'); return; }
+
+    const btn = document.getElementById('genSummaryBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Analyzing…'; }
+
+    // Attempt to fetch fresh transcripts for top calls (up to 5)
+    const callsWithData = [..._cachedCalls].slice(0, 20);
+
+    // Enrich with messages if not already present
+    const enriched = [];
+    for (const call of callsWithData.slice(0, 5)) {
+      const enrichedCall = { ...call };
+      if (!enrichedCall.transcript) {
+        try {
+          const r = await fetch(`${BASE}/logs/calls/${call.callId}/messages`);
+          if (r.ok) {
+            const d = await r.json();
+            enrichedCall._messages = (d.messages || []).map(m => `[${cap(m.role)}] ${m.text}`).join('\n');
+          }
+        } catch { /* skip */ }
+      }
+      enriched.push(enrichedCall);
+    }
+
+    // Merge enriched into full list (rest use takeaway/shortSummary)
+    const allCalls = enriched.concat(_cachedCalls.slice(5));
+    renderSummary(allCalls);
+
+    if (btn) { btn.disabled = false; btn.innerHTML = '<span>✨</span> Regenerate Summary'; }
+  }
+
+  function renderSummary(calls) {
+    if (!calls.length) {
+      document.getElementById('summaryContent').innerHTML = `
+        <div class="summary-placeholder">
+          <div class="summary-placeholder-icon">📭</div>
+          <div class="summary-placeholder-text">No call data available to summarize</div>
+        </div>`;
+      return;
+    }
+
+    const total    = calls.length;
+    const positive = calls.filter(c => c.sentiment === 'positive');
+    const negative = calls.filter(c => c.sentiment === 'negative');
+    const neutral  = calls.filter(c => c.sentiment === 'neutral');
+    const cbs      = calls.filter(c => c.callback);
+
+    // Collect all text for analysis
+    const allText = calls.map(c =>
+      [c.takeaway, c.shortSummary, c._messages, c.transcript].filter(Boolean).join(' ')
+    ).join(' ').toLowerCase();
+
+    // Keyword extraction
+    const positiveKws = ['good', 'great', 'excellent', 'happy', 'satisfied', 'fast', 'friendly', 'helpful', 'professional', 'clean', 'quick', 'amazing', 'love', 'wonderful', 'best'];
+    const negativeKws = ['slow', 'bad', 'poor', 'issue', 'problem', 'delay', 'rude', 'dirty', 'late', 'expensive', 'complaint', 'dissatisfied', 'unhappy', 'worst', 'wait'];
+    const serviceKws  = ['oil change', 'service', 'repair', 'maintenance', 'parts', 'billing', 'staff', 'technician', 'waiting time', 'pickup', 'delivery'];
+
+    const foundPos   = positiveKws.filter(k => allText.includes(k));
+    const foundNeg   = negativeKws.filter(k => allText.includes(k));
+    const foundTheme = serviceKws.filter(k => allText.includes(k));
+
+    // Takeaways from calls (unique, non-empty)
+    const takeaways = [...new Set(
+      calls.map(c => c.takeaway || c.shortSummary).filter(t => t && t !== '—' && t.length > 3)
+    )].slice(0, 5);
+
+    // Key insights
+    const posRate = total ? Math.round(positive.length / total * 100) : 0;
+    const negRate = total ? Math.round(negative.length / total * 100) : 0;
+    const cbRate  = total ? Math.round(cbs.length / total * 100) : 0;
+
+    const insights = [];
+    if (posRate >= 60)      insights.push(`${posRate}% of customers reported a positive experience`);
+    if (negRate >= 20)      insights.push(`${negRate}% expressed negative feedback — attention needed`);
+    if (cbRate > 0)         insights.push(`${cbs.length} customer${cbs.length > 1 ? 's' : ''} requested a callback from the team`);
+    if (foundNeg.includes('slow') || foundNeg.includes('wait')) insights.push('Waiting time is a recurring concern across multiple calls');
+    if (foundPos.includes('friendly') || foundPos.includes('staff')) insights.push('Staff friendliness is a key positive highlight');
+    if (insights.length < 3) insights.push(`${total} total calls analyzed — continue monitoring for trend changes`);
+
+    // Callback customers
+    const cbCustomers = cbs
+      .map(c => c.customer_name || c.phone_number || 'Unknown')
+      .filter(Boolean).slice(0, 5);
+
+    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('summaryTs').textContent = `Updated ${now}`;
+
+    document.getElementById('summaryContent').innerHTML = `
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:12px;">
+          Analysis of <strong style="color:var(--text)">${total} call${total!==1?'s':''}</strong> —
+          <span style="color:var(--success)">${positive.length} positive</span>,
+          <span style="color:var(--error)">${negative.length} negative</span>,
+          <span style="color:var(--text-2)">${neutral.length} neutral</span>
+          ${cbs.length ? `· <span style="color:var(--warn)">${cbs.length} callback${cbs.length>1?'s':''} requested</span>` : ''}.
+        </div>
+        <button class="btn-gen-summary" id="genSummaryBtn" onclick="generateSummary()" style="font-size:12px;padding:7px 14px;">
+          <span>↻</span> Regenerate
+        </button>
+      </div>
+
+      <!-- Top Insights -->
+      <div class="summary-section" style="margin-bottom:14px;">
+        <div class="summary-section-title">
+          <span class="dot" style="background:var(--accent)"></span>
+          Top ${Math.min(insights.length, 5)} Key Insights
+        </div>
+        ${insights.slice(0,5).map((ins, i) => `
+          <div class="insight-row">
+            <div class="insight-num">${i+1}</div>
+            <div>${esc(ins)}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="summary-grid">
+        <!-- What Customers Like -->
+        <div class="summary-section">
+          <div class="summary-section-title">
+            <span class="dot" style="background:var(--success)"></span>
+            What Customers Like
+          </div>
+          ${positive.length ? `<ul class="summary-ul">
+            ${foundPos.length ? foundPos.slice(0,4).map(k => `<li>${cap(k)} service quality mentioned</li>`).join('') : ''}
+            ${positive.slice(0,3).map(c => c.takeaway ? `<li>${esc(c.takeaway)}</li>` : '').filter(Boolean).join('')}
+          </ul>` : `<div style="font-size:12px;color:var(--text-3)">No positive feedback recorded yet.</div>`}
+        </div>
+
+        <!-- What Customers Dislike -->
+        <div class="summary-section">
+          <div class="summary-section-title">
+            <span class="dot" style="background:var(--error)"></span>
+            What Customers Dislike
+          </div>
+          ${negative.length ? `<ul class="summary-ul">
+            ${foundNeg.length ? foundNeg.slice(0,4).map(k => `<li>${cap(k)} issues mentioned</li>`).join('') : ''}
+            ${negative.slice(0,3).map(c => c.takeaway ? `<li>${esc(c.takeaway)}</li>` : '').filter(Boolean).join('')}
+          </ul>` : `<div style="font-size:12px;color:var(--text-3)">No significant complaints recorded.</div>`}
+        </div>
+
+        <!-- Callback Required -->
+        <div class="summary-section">
+          <div class="summary-section-title">
+            <span class="dot" style="background:var(--warn)"></span>
+            Callback Required (${cbs.length})
+          </div>
+          ${cbs.length ? `<ul class="summary-ul">
+            ${cbCustomers.map(n => `<li>${esc(n)}</li>`).join('')}
+            ${cbs.length > 5 ? `<li style="color:var(--text-3)">+${cbs.length - 5} more…</li>` : ''}
+          </ul>` : `<div style="font-size:12px;color:var(--text-3)">No callbacks pending.</div>`}
+        </div>
+
+        <!-- Recommended Actions -->
+        <div class="summary-section">
+          <div class="summary-section-title">
+            <span class="dot" style="background:#818CF8"></span>
+            Recommended Actions
+          </div>
+          <ul class="summary-ul">
+            ${cbRate > 0       ? `<li>Follow up with ${cbs.length} customer${cbs.length>1?'s':''} who requested callbacks</li>` : ''}
+            ${negRate >= 20    ? `<li>Review service quality with the team — negative rate is ${negRate}%</li>` : ''}
+            ${foundNeg.includes('slow') || foundNeg.includes('wait') ? `<li>Address waiting time issues at the service center</li>` : ''}
+            ${posRate >= 60    ? `<li>Encourage satisfied customers to leave Google reviews</li>` : ''}
+            <li>Continue daily outbound feedback calls to track sentiment trends</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Trend Tags -->
+      <div class="summary-section" style="margin-top:14px;">
+        <div class="summary-section-title">
+          <span class="dot" style="background:var(--text-3)"></span>
+          Recurring Themes
+        </div>
+        <div class="theme-tags">
+          ${[...new Set([...foundPos, ...foundNeg, ...foundTheme])].slice(0,12)
+            .map(t => `<span class="theme-tag">${esc(cap(t))}</span>`).join('')}
+          ${!foundPos.length && !foundNeg.length ? `<span class="theme-tag" style="color:var(--text-3)">Not enough data</span>` : ''}
+        </div>
+      </div>
+
+      <!-- Recent Takeaways -->
+      ${takeaways.length ? `
+      <div class="summary-section" style="margin-top:14px;">
+        <div class="summary-section-title">
+          <span class="dot" style="background:var(--text-2)"></span>
+          Recent Call Highlights
+        </div>
+        <ul class="summary-ul">
+          ${takeaways.map(t => `<li>${esc(t)}</li>`).join('')}
+        </ul>
+      </div>` : ''}
+    `;
+
+    if (!_summaryOpen) {
+      _summaryOpen = true;
+      document.getElementById('summaryBody').classList.add('open');
+      document.getElementById('summaryToggle').classList.add('open');
+    }
+  }
+
+  // ── PROFILE ───────────────────────────────────────────────────────────────────
   function loadProfile() {
     const name = localStorage.getItem('profileName') || '';
-    document.getElementById('profileName').value = name;
+    document.getElementById('profileNameInput').value = name;
     document.getElementById('sidebarName').textContent = name || 'Your Name';
-    document.getElementById('panelAvatar').textContent = name ? name.charAt(0).toUpperCase() : '?';
-    document.getElementById('sidebarAvatar').textContent = name ? name.charAt(0).toUpperCase() : '?';
-    document.getElementById('sidebarDid').textContent = DID_NUMBER;
-    document.getElementById('didNumber').textContent = DID_NUMBER;
+    document.getElementById('panelAvatar').textContent   = name ? name[0].toUpperCase() : '?';
+    document.getElementById('sidebarAvatar').textContent = name ? name[0].toUpperCase() : '?';
+    document.getElementById('sidebarDid').textContent = DID;
   }
 
   function saveProfile() {
-    const name = document.getElementById('profileName').value.trim();
+    const name = document.getElementById('profileNameInput').value.trim();
     localStorage.setItem('profileName', name);
     loadProfile();
     closeProfile();
     toast('Profile saved!', 'success');
   }
 
-  function openProfile() {
-    document.getElementById('panelOverlay').classList.add('open');
+  function openProfile()  {
+    document.getElementById('overlay').classList.add('open');
     document.getElementById('profilePanel').classList.add('open');
   }
 
   function closeProfile() {
-    document.getElementById('panelOverlay').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
     document.getElementById('profilePanel').classList.remove('open');
   }
 
-  // ── UTILS ──
-  function escHtml(str) {
-    if (!str) return '';
-    return String(str)
+  // ── UTILS ─────────────────────────────────────────────────────────────────────
+  function esc(s) {
+    if (s == null) return '';
+    return String(s)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
       .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
-  // ── INIT ──
+  function cap(s) {
+    if (!s) return s;
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  // ── INIT ──────────────────────────────────────────────────────────────────────
   loadProfile();
 </script>
 </body>
