@@ -217,10 +217,11 @@ async def ultravox_webhook(request: Request) -> Response:
             + (f" | batch={batch_id}" if batch_id else "")
         )
 
-        if batch_id:
-            # Fire transcript analysis in background — don't block the 204 response
+        # Analyze ALL answered calls (not just batch) — runs in background
+        if call.get("joined"):
             asyncio.create_task(_analyze_and_save(call_id))
 
+        if batch_id:
             # A call is "succeeded" if it was answered (joined timestamp present)
             succeeded = bool(call.get("joined"))
             error_msg = end_reason if not succeeded else None

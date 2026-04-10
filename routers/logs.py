@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
 from helpers.ultravox import get_agent_calls, get_call_messages, get_call_recording
+from helpers.openai_helper import analyze_transcript, generate_summary
 import helpers.db as db
 from models.logs import CallsListResponse, CallSummary, CallMessagesResponse, MessageItem
 
@@ -403,3 +404,86 @@ async def get_recording(call_id: str, download: int = Query(0)):
             "Accept-Ranges": "bytes",
         },
     )
+
+
+_VISIBLE_ROLES = {"MESSAGE_ROLE_USER", "MESSAGE_ROLE_AGENT"}
+_ROLE_LABEL    = {"MESSAGE_ROLE_USER": "Customer", "MESSAGE_ROLE_AGENT": "Agent"}
+
+
+@router.post("/ai-summary")
+async def get_ai_summary():
+    """
+    POST /logs/ai-summary
+    Fetches recent answered calls, runs GPT-4o-mini analysis on each transcript,
+    then generates a comprehensive business summary. No DB required.
+    """
+    agent_id = os.getenv("AGENT_ID", "").strip().strip("'\"")
+    if not agent_id:
+        raise HTTPException(status_code=500, detail="AGENT_ID is not configured.")
+
+    # 1. Fetch recent calls (last 50, filter to answered)
+    try:
+        data = await get_agent_calls(agent_id, page_size=50)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Ultravox API error: {str(e)}")
+
+    all_calls   = data.get("results", [])
+    answered    = [c for c in all_calls if c.get("joined")][:15]  # max 15 for speed
+
+    if not answered:
+        return {"error": "No answered calls found to analyze"}
+
+    # 2. For each call: fetch transcript + run GPT-4o-mini per-call analysis
+    calls_data = []
+    for call in answered:
+        call_id  = call.get("callId", "")
+        meta     = call.get("metadata") or {}
+        customer = meta.get("customer_name") or "Unknown"
+        phone    = meta.get("phone_number")  or ""
+
+        # Try to get DB-stored analysis first
+        db_info  = {}
+        contact_map = await db.get_contact_info_by_call_ids([call_id])
+        if call_id in contact_map:
+            db_info = contact_map[call_id]
+
+        sentiment = db_info.get("sentiment", "")
+        takeaway  = db_info.get("takeaway",  "") or call.get("shortSummary", "")
+        callback  = db_info.get("callback",  False)
+
+        # Fetch transcript from Ultravox
+        transcript = ""
+        try:
+            msg_data = await get_call_messages(call_id)
+            lines = []
+            for msg in msg_data.get("results", []):
+                role = msg.get("role", "")
+                if role not in _VISIBLE_ROLES:
+                    continue
+                text = (msg.get("text") or "").strip()
+                if text:
+                    lines.append(f"{_ROLE_LABEL[role]}: {text}")
+            transcript = "\n".join(lines)
+        except Exception:
+            transcript = takeaway  # fallback to summary
+
+        # If no stored sentiment, analyze now
+        if not sentiment and transcript:
+            analysis  = await analyze_transcript(transcript)
+            sentiment = analysis["sentiment"]
+            takeaway  = analysis.get("takeaway") or takeaway
+            callback  = analysis["callback"]
+
+        calls_data.append({
+            "customer":   customer,
+            "phone":      phone,
+            "sentiment":  sentiment or "neutral",
+            "takeaway":   takeaway,
+            "callback":   callback,
+            "transcript": transcript[:800],
+        })
+
+    # 3. Send all to GPT-4o-mini for aggregate summary
+    summary = await generate_summary(calls_data)
+    summary["calls_analyzed"] = len(calls_data)
+    return summary

@@ -1458,38 +1458,118 @@
   }
 
   async function generateSummary() {
-    if (!_cachedCalls.length) { toast('Load call logs first', 'error'); return; }
-
     const btn = document.getElementById('genSummaryBtn');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Analyzing…'; }
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Analyzing calls with AI…'; }
 
-    // Attempt to fetch fresh transcripts for top calls (up to 5)
-    const callsWithData = [..._cachedCalls].slice(0, 20);
-
-    // Enrich with messages if not already present
-    const enriched = [];
-    for (const call of callsWithData.slice(0, 5)) {
-      const enrichedCall = { ...call };
-      if (!enrichedCall.transcript) {
-        try {
-          const r = await fetch(`${BASE}/logs/calls/${call.callId}/messages`);
-          if (r.ok) {
-            const d = await r.json();
-            enrichedCall._messages = (d.messages || []).map(m => `[${cap(m.role)}] ${m.text}`).join('\n');
-          }
-        } catch { /* skip */ }
-      }
-      enriched.push(enrichedCall);
+    // Open the summary panel
+    if (!_summaryOpen) {
+      _summaryOpen = true;
+      document.getElementById('summaryBody').classList.add('open');
+      document.getElementById('summaryToggle').classList.add('open');
     }
 
-    // Merge enriched into full list (rest use takeaway/shortSummary)
-    const allCalls = enriched.concat(_cachedCalls.slice(5));
-    renderSummary(allCalls);
+    document.getElementById('summaryContent').innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;padding:24px 0;color:var(--text-2);font-size:13px;">
+        <div class="spinner"></div>
+        GPT-4o-mini is analyzing your call transcripts…
+      </div>`;
 
-    if (btn) { btn.disabled = false; btn.innerHTML = '<span>✨</span> Regenerate Summary'; }
+    try {
+      const res = await fetch(`${BASE}/logs/ai-summary`, { method: 'POST' });
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || data.detail || 'Summary generation failed');
+      }
+
+      renderSummaryFromAPI(data);
+    } catch (err) {
+      document.getElementById('summaryContent').innerHTML = `
+        <div style="padding:16px 0;">
+          <div style="color:var(--error);font-size:13px;margin-bottom:12px;">❌ ${esc(err.message)}</div>
+          <button class="btn-gen-summary" id="genSummaryBtn" onclick="generateSummary()">
+            <span>↻</span> Try Again
+          </button>
+        </div>`;
+    } finally {
+      const b = document.getElementById('genSummaryBtn');
+      if (b) { b.disabled = false; b.innerHTML = '<span>✨</span> Generate AI Summary'; }
+    }
+  }
+
+  function renderSummaryFromAPI(d) {
+    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('summaryTs').textContent = `Updated ${now}`;
+
+    const sb = d.sentiment_breakdown || {};
+    const total = (sb.positive||0) + (sb.negative||0) + (sb.neutral||0) || d.calls_analyzed || 0;
+
+    const ul = (arr) => Array.isArray(arr) && arr.length
+      ? `<ul class="summary-ul">${arr.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`
+      : `<div style="font-size:12px;color:var(--text-3)">None recorded.</div>`;
+
+    document.getElementById('summaryContent').innerHTML = `
+      <!-- Overview -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div style="font-size:12.5px;color:var(--text-2);line-height:1.65;flex:1;">
+          ${esc(d.overall || 'Summary generated.')}
+        </div>
+        <button class="btn-gen-summary" id="genSummaryBtn" onclick="generateSummary()" style="font-size:12px;padding:7px 13px;flex-shrink:0;">
+          <span>↻</span> Regenerate
+        </button>
+      </div>
+
+      <!-- Sentiment strip -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <span class="badge" style="background:var(--neutral-bg);border-color:var(--neutral-bdr);color:var(--text-2);">${total} Analyzed</span>
+        ${sb.positive ? `<span class="badge positive"><span class="badge-dot"></span>${sb.positive} Positive</span>` : ''}
+        ${sb.negative ? `<span class="badge negative"><span class="badge-dot"></span>${sb.negative} Negative</span>` : ''}
+        ${sb.neutral  ? `<span class="badge neutral"><span class="badge-dot"></span>${sb.neutral} Neutral</span>`  : ''}
+      </div>
+
+      <!-- Key Insights -->
+      ${Array.isArray(d.key_insights) && d.key_insights.length ? `
+      <div class="summary-section" style="margin-bottom:14px;">
+        <div class="summary-section-title"><span class="dot" style="background:var(--accent)"></span>Top Insights</div>
+        ${d.key_insights.map((ins,i) => `
+          <div class="insight-row">
+            <div class="insight-num">${i+1}</div>
+            <div>${esc(ins)}</div>
+          </div>`).join('')}
+      </div>` : ''}
+
+      <div class="summary-grid">
+        <div class="summary-section">
+          <div class="summary-section-title"><span class="dot" style="background:var(--success)"></span>What Customers Like</div>
+          ${ul(d.likes)}
+        </div>
+        <div class="summary-section">
+          <div class="summary-section-title"><span class="dot" style="background:var(--error)"></span>What Customers Dislike</div>
+          ${ul(d.dislikes)}
+        </div>
+        <div class="summary-section">
+          <div class="summary-section-title"><span class="dot" style="background:var(--warn)"></span>Callback Issues</div>
+          ${ul(d.callback_issues)}
+        </div>
+        <div class="summary-section">
+          <div class="summary-section-title"><span class="dot" style="background:#818CF8"></span>Recommended Actions</div>
+          ${ul(d.actions)}
+        </div>
+      </div>
+
+      <!-- Themes -->
+      ${Array.isArray(d.themes) && d.themes.length ? `
+      <div class="summary-section" style="margin-top:14px;">
+        <div class="summary-section-title"><span class="dot" style="background:var(--text-3)"></span>Recurring Themes</div>
+        <div class="theme-tags">
+          ${d.themes.map(t => `<span class="theme-tag">${esc(t)}</span>`).join('')}
+        </div>
+      </div>` : ''}
+    `;
   }
 
   function renderSummary(calls) {
+    // Legacy client-side stub — real summary now comes from /logs/ai-summary API
     if (!calls.length) {
       document.getElementById('summaryContent').innerHTML = `
         <div class="summary-placeholder">
