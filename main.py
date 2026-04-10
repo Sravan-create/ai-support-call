@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv, set_key
 
 from helpers.ultravox import create_agent, patch_agent, list_webhooks, register_webhook
@@ -184,6 +186,12 @@ app.include_router(outbound_router)
 app.include_router(logs_router)
 app.include_router(webhook_router)
 app.include_router(tts_router)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+async def dashboard():
+    return FileResponse("static/dashboard.html")
 
 
 @app.get("/health")

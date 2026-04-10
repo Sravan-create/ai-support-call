@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venkanna Motors — AI Voice Bot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       CSS RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0B0F1A;
+      --surface:   #111827;
+      --surface2:  #1C2537;
+      --surface3:  #243044;
+      --border:    rgba(255,255,255,0.07);
+      --border2:   rgba(255,255,255,0.12);
+      --orange:    #F97316;
+      --orange-d:  #EA6D0C;
+      --orange-glow: rgba(249,115,22,0.25);
+      --green:     #22C55E;
+      --red:       #EF4444;
+      --yellow:    #EAB308;
+      --gray:      #94A3B8;
+      --text:      #F1F5F9;
+      --text-muted:#8892A4;
+      --text-dim:  #4B5563;
+      --radius:    14px;
+      --radius-sm: 8px;
+      --shadow:    0 4px 24px rgba(0,0,0,0.5);
+      --shadow-lg: 0 12px 48px rgba(0,0,0,0.7);
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       SCROLLBAR
+    ============================================================ */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+
+    /* ============================================================
+       LAYOUT
+    ============================================================ */
+    .app-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       TOPBAR
+    ============================================================ */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 32px;
+      height: 64px;
+      background: rgba(17,24,39,0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--orange), #FBBF24);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 0 16px var(--orange-glow);
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+    }
+
+    .topbar-spacer { flex: 1; }
+
+    .topbar-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 500;
+    }
+
+    .dot-live {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { opacity: 0.8; box-shadow: 0 0 0 4px rgba(34,197,94,0); }
+    }
+
+    /* ============================================================
+       MAIN CONTENT
+    ============================================================ */
+    .main-content {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 32px 24px 64px;
+    }
+
+    /* ============================================================
+       TAB NAV
+    ============================================================ */
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      width: fit-content;
+      margin-bottom: 32px;
+    }
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: var(--text); background: var(--surface2); }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--orange), #FBBF24);
+      color: #fff;
+      box-shadow: 0 2px 12px var(--orange-glow);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       PAGE PANELS
+    ============================================================ */
+    .page {
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .page.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       CARD
+    ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s;
+    }
+
+    .card:hover { border-color: var(--border2); }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    /* ============================================================
+       CALL PAGE
+    ============================================================ */
+    .call-page-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .call-page-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 15px;
+      color: var(--text);
+      font-family: inherit;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="tel"]:focus {
+      border-color: var(--orange);
+      background: var(--surface3);
+      box-shadow: 0 0 0 3px var(--orange-glow);
+    }
+
+    input::placeholder { color: var(--text-dim); }
+
+    .input-hint {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 5px;
+    }
+
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--orange), #FBBF24);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px var(--orange-glow);
+      letter-spacing: 0.2px;
+      margin-top: 8px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(249,115,22,0.4);
+    }
+
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Result card */
+    .result-card {
+      margin-top: 20px;
+      padding: 18px 20px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      animation: fadeUp 0.3s ease;
+      display: none;
+    }
+
+    .result-card.success {
+      background: rgba(34,197,94,0.08);
+      border-color: rgba(34,197,94,0.25);
+    }
+
+    .result-card.error {
+      background: rgba(239,68,68,0.08);
+      border-color: rgba(239,68,68,0.25);
+    }
+
+    .result-card.show { display: block; }
+
+    .result-icon { font-size: 20px; margin-bottom: 8px; }
+
+    .result-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .result-card.success .result-title { color: var(--green); }
+    .result-card.error .result-title { color: var(--red); }
+
+    .result-row {
+      display: flex;
+      gap: 8px;
+      font-size: 13px;
+      margin-bottom: 5px;
+      align-items: baseline;
+    }
+
+    .result-key {
+      color: var(--text-muted);
+      font-weight: 500;
+      flex-shrink: 0;
+      min-width: 80px;
+    }
+
+    .result-val { color: var(--text); word-break: break-all; }
+
+    /* Info card on right side */
+    .info-card {
+      background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(251,191,36,0.06));
+      border: 1px solid rgba(249,115,22,0.2);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .info-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--orange);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-step {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 18px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      background: rgba(249,115,22,0.15);
+      border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--orange);
+      flex-shrink: 0;
+    }
+
+    .step-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .step-text strong { color: var(--text); font-weight: 600; }
+
+    /* ============================================================
+       LOGS PAGE
+    ============================================================ */
+    .logs-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .logs-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface3);
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    /* Summary card */
+    .summary-card {
+      margin-bottom: 24px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.2s;
+    }
+
+    .stat-box:hover { border-color: var(--border2); }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .stat-value.orange { color: var(--orange); }
+    .stat-value.green  { color: var(--green); }
+    .stat-value.red    { color: var(--red); }
+    .stat-value.gray   { color: var(--gray); }
+    .stat-value.yellow { color: var(--yellow); }
+
+    .sentiment-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .pill-green  { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+    .pill-red    { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+    .pill-gray   { background: rgba(148,163,184,0.1); color: var(--gray); border: 1px solid rgba(148,163,184,0.2); }
+    .pill-yellow { background: rgba(234,179,8,0.12); color: var(--yellow); border: 1px solid rgba(234,179,8,0.25); }
+    .pill-orange { background: rgba(249,115,22,0.12); color: var(--orange); border: 1px solid rgba(249,115,22,0.25); }
+
+    .takeaways-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .takeaways-list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .takeaways-list li::before {
+      content: '→';
+      color: var(--orange);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .no-takeaways {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* Table */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead tr {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+    tbody tr.expanded { background: rgba(249,115,22,0.04); }
+
+    td {
+      padding: 14px 16px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    .td-name { font-weight: 600; }
+
+    .td-phone {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-green  { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .badge-red    { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+    .badge-yellow { background: rgba(234,179,8,0.12); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+    .badge-gray   { background: rgba(148,163,184,0.1); color: var(--gray); border: 1px solid rgba(148,163,184,0.15); }
+    .badge-orange { background: rgba(249,115,22,0.12); color: var(--orange); border: 1px solid rgba(249,115,22,0.2); }
+
+    .td-feedback {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .btn-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-icon:hover {
+      background: rgba(249,115,22,0.1);
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .btn-expand {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .btn-expand:hover { color: var(--text); background: var(--surface2); }
+
+    /* Transcript row */
+    .transcript-row td {
+      padding: 0;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .transcript-inner {
+      padding: 16px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      border-left: 3px solid var(--orange);
+      margin: 12px 16px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 0 8px 8px 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .transcript-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--orange);
+      margin-bottom: 8px;
+    }
+
+    /* Auto-refresh indicator */
+    .refresh-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .refresh-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--orange);
+      border-radius: 50%;
+      animation: pulse-orange 3s infinite;
+    }
+
+    @keyframes pulse-orange {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 72px 24px;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .empty-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .empty-sub   { font-size: 13px; color: var(--text-muted); max-width: 280px; }
+
+    /* Loading row */
+    .loading-row td {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .loading-spinner-sm {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(249,115,22,0.2);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    /* ============================================================
+       MODAL
+    ============================================================ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 28px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+
+    .modal-title { font-size: 17px; font-weight: 700; }
+    .modal-sub   { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    .btn-close {
+      width: 32px;
+      height: 32px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      line-height: 1;
+      font-family: inherit;
+    }
+
+    .btn-close:hover { background: var(--surface3); color: var(--text); }
+
+    .modal-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .meta-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 3px;
+    }
+
+    .meta-value { font-size: 14px; font-weight: 600; color: var(--text); }
+
+    audio {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 4px;
+      accent-color: var(--orange);
+    }
+
+    .audio-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    #toast-container {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+      pointer-events: all;
+      max-width: 320px;
+    }
+
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error   { border-left: 3px solid var(--red); }
+    .toast.info    { border-left: 3px solid var(--orange); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to   { opacity: 0; transform: translateX(10px); }
+    }
+
+    /* ============================================================
+       CALLBACK BADGE
+    ============================================================ */
+    .callback-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      padding: 2px 8px;
+      background: rgba(249,115,22,0.12);
+      color: var(--orange);
+      border-radius: 99px;
+      border: 1px solid rgba(249,115,22,0.2);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ============================================================
+       RESPONSIVE TWEAKS
+    ============================================================ */
+    @media (max-width: 640px) {
+      .topbar { padding: 0 16px; }
+      .main-content { padding: 20px 12px 48px; }
+      .card { padding: 20px 16px; }
+      th, td { padding: 10px 12px; }
+      .modal { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- ===================== TOPBAR ===================== -->
+  <header class="topbar">
+    <div class="logo-mark">V</div>
+    <div class="logo-text">
+      <span class="logo-name">Venkanna Motors</span>
+      <span class="logo-sub">AI Feedback System</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-badge">
+      <span class="dot-live"></span>
+      System Live
+    </div>
+  </header>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main-content">
+
+    <!-- TAB NAV -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('calls')" id="tab-calls">
+        📞 Calls
+      </button>
+      <button class="tab-btn" onclick="switchTab('logs')" id="tab-logs">
+        📋 Logs
+      </button>
+    </nav>
+
+    <!-- ===================== PAGE: CALLS ===================== -->
+    <div class="page active" id="page-calls">
+      <div class="call-page-grid">
+
+        <!-- Call form card -->
+        <div class="card">
+          <div class="card-title">Initiate Customer Call</div>
+          <div class="card-subtitle">Trigger an AI voice call to collect customer feedback.</div>
+
+          <form id="callForm" onsubmit="triggerCall(event)">
+            <div class="form-group">
+              <label for="customerName">Customer Name</label>
+              <input
+                type="text"
+                id="customerName"
+                placeholder="e.g. Ramesh Kumar"
+                required
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="phoneNumber">Phone Number</label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                placeholder="9876543210"
+                maxlength="10"
+                pattern="[6-9][0-9]{9}"
+                required
+                autocomplete="off"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+              />
+              <div class="input-hint">10-digit Indian mobile number (starts with 6–9). +91 auto-prepended.</div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="callBtn">
+              <span id="callBtnContent">📞 &nbsp;Trigger Call</span>
+            </button>
+          </form>
+
+          <!-- Result -->
+          <div class="result-card" id="callResult">
+            <div class="result-icon" id="resultIcon"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div id="resultBody"></div>
+          </div>
+        </div>
+
+        <!-- Info card -->
+        <div class="info-card">
+          <h3>🤖 How It Works</h3>
+          <div class="info-step">
+            <div class="step-num">1</div>
+            <div class="step-text">Enter the <strong>customer's name</strong> and their <strong>10-digit mobile number</strong>.</div>
+          </div>
+          <div class="info-step">
+            <div class="step-num">2</div>
+            <div class="step-text">Click <strong>Trigger Call</strong> — an AI voice bot will call the customer immediately.</div>
+          </div>
+          <div class="info-step">
+            <div class="step-num">3</div>
+            <div class="step-text">The bot conducts a natural conversation and collects <strong>feedback &amp; sentiment</strong>.</div>
+          </div>
+          <div class="info-step">
+            <div class="step-num">4</div>
+            <div class="step-text">View call details, transcripts, and recordings in the <strong>Logs</strong> tab.</div>
+          </div>
+          <div style="margin-top:20px; padding:14px; background:rgba(0,0,0,0.2); border-radius:8px; font-size:12px; color:var(--text-muted); line-height:1.6;">
+            Calls are routed through the Venkanna Motors AI pipeline. Each call is recorded, transcribed, and analyzed for sentiment automatically.
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-calls -->
+
+    <!-- ===================== PAGE: LOGS ===================== -->
+    <div class="page" id="page-logs">
+
+      <div class="logs-header">
+        <div class="logs-title">Call Logs</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div class="refresh-info">
+            <span class="refresh-dot"></span>
+            <span id="refreshCountdown">Auto-refresh in 30s</span>
+          </div>
+          <button class="btn-secondary" onclick="loadLogs(true)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- AI Summary Card -->
+      <div class="card summary-card" id="summaryCard">
+        <div class="card-title">AI Summary</div>
+        <div class="card-subtitle">Aggregated insights from all call logs.</div>
+
+        <div class="summary-grid" id="summaryStats">
+          <div class="stat-box">
+            <div class="stat-label">Total Calls</div>
+            <div class="stat-value orange" id="statTotal">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Positive</div>
+            <div class="stat-value green" id="statPositive">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Negative</div>
+            <div class="stat-value red" id="statNegative">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Neutral</div>
+            <div class="stat-value gray" id="statNeutral">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Callback Needed</div>
+            <div class="stat-value yellow" id="statCallback">—</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:10px;">Common Feedback Themes</div>
+          <ul class="takeaways-list" id="takeawaysList">
+            <li class="no-takeaways" style="list-style:none;">Load logs to see themes.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Logs table -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="table-wrapper">
+          <table id="logsTable">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Sentiment</th>
+                <th>Feedback</th>
+                <th>Callback</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="logsBody">
+              <tr class="loading-row">
+                <td colspan="8">
+                  <span class="loading-spinner-sm"></span>Loading call logs…
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page-logs -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    Venkanna Motors AI Voice Bot &nbsp;·&nbsp; Built with ❤️ for customer excellence
+  </footer>
+
+</div><!-- /app-wrapper -->
+
+<!-- ===================== RECORDING MODAL ===================== -->
+<div class="modal-overlay" id="recordingModal" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">📼 Call Recording</div>
+        <div class="modal-sub" id="modalSub">Listen to the full call audio</div>
+      </div>
+      <button class="btn-close" onclick="closeModal()">&times;</button>
+    </div>
+
+    <div class="modal-meta" id="modalMeta"></div>
+
+    <div class="audio-label">Audio Playback</div>
+    <audio id="audioPlayer" controls controlsList="nodownload"></audio>
+
+    <div style="margin-top:16px;font-size:12px;color:var(--text-dim);">
+      Audio is streamed directly from the call recording server.
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOAST CONTAINER ===================== -->
+<div id="toast-container"></div>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+  const BASE_URL = window.location.origin;
+
+  // ── Utilities ──────────────────────────────────────────────────────────────
+
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${icons[type] || '💬'}</span><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3200);
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', hour12: true
+      });
+    } catch { return dateStr; }
+  }
+
+  function statusBadge(status) {
+    if (!status) return '<span class="badge badge-gray">—</span>';
+    const s = status.toLowerCase();
+    if (s === 'ended' || s === 'completed') return `<span class="badge badge-green">✓ ${status}</span>`;
+    if (s === 'failed' || s === 'error')    return `<span class="badge badge-red">✕ ${status}</span>`;
+    if (s === 'initiated' || s === 'ringing' || s === 'in-progress') return `<span class="badge badge-yellow">⟳ ${status}</span>`;
+    return `<span class="badge badge-gray">${status}</span>`;
+  }
+
+  function sentimentBadge(sentiment) {
+    if (!sentiment) return '<span class="badge badge-gray">—</span>';
+    const s = sentiment.toLowerCase();
+    if (s === 'positive') return `<span class="badge badge-green">😊 Positive</span>`;
+    if (s === 'negative') return `<span class="badge badge-red">😞 Negative</span>`;
+    return `<span class="badge badge-gray">😐 Neutral</span>`;
+  }
+
+  // ── Tab switching ──────────────────────────────────────────────────────────
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    document.getElementById(`page-${tab}`).classList.add('active');
+    if (tab === 'logs') loadLogs(false);
+  }
+
+  // ── CALLS page ─────────────────────────────────────────────────────────────
+
+  async function triggerCall(e) {
+    e.preventDefault();
+
+    const name   = document.getElementById('customerName').value.trim();
+    const digits = document.getElementById('phoneNumber').value.trim();
+
+    if (!/^[6-9]\d{9}$/.test(digits)) {
+      showToast('Phone number must be 10 digits starting with 6–9', 'error');
+      return;
+    }
+
+    const phone = '+91' + digits;
+    const btn   = document.getElementById('callBtn');
+    const content = document.getElementById('callBtnContent');
+
+    btn.disabled = true;
+    content.innerHTML = '<span class="spinner"></span> &nbsp;Initiating…';
+
+    const resultEl = document.getElementById('callResult');
+    resultEl.className = 'result-card';
+
+    try {
+      const res = await fetch(`${BASE_URL}/outbound/call`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phone, customer_name: name })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        resultEl.className = 'result-card success show';
+        document.getElementById('resultIcon').textContent = '✅';
+        document.getElementById('resultTitle').textContent = 'Call Initiated Successfully';
+        document.getElementById('resultBody').innerHTML = `
+          <div class="result-row"><span class="result-key">Call ID</span><span class="result-val" style="font-family:monospace;font-size:12px;">${data.callId || '—'}</span></div>
+          <div class="result-row"><span class="result-key">Status</span><span class="result-val">${data.status || '—'}</span></div>
+          <div class="result-row"><span class="result-key">To</span><span class="result-val">${data.to_number || phone}</span></div>
+          <div class="result-row"><span class="result-key">Message</span><span class="result-val">${data.message || 'Call placed.'}</span></div>
+        `;
+        showToast('Call initiated successfully!', 'success');
+        document.getElementById('callForm').reset();
+      } else {
+        throw new Error(data.detail || data.message || `Error ${res.status}`);
+      }
+    } catch (err) {
+      resultEl.className = 'result-card error show';
+      document.getElementById('resultIcon').textContent = '❌';
+      document.getElementById('resultTitle').textContent = 'Call Failed';
+      document.getElementById('resultBody').innerHTML = `
+        <div class="result-row"><span class="result-key">Error</span><span class="result-val">${err.message}</span></div>
+      `;
+      showToast('Failed to initiate call: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      content.innerHTML = '📞 &nbsp;Trigger Call';
+    }
+  }
+
+  // ── LOGS page ──────────────────────────────────────────────────────────────
+
+  let allLogs = [];
+  let refreshTimer = null;
+  let countdownInterval = null;
+  let countdown = 30;
+
+  async function loadLogs(showLoader = true) {
+    clearTimeout(refreshTimer);
+    clearInterval(countdownInterval);
+
+    const tbody = document.getElementById('logsBody');
+
+    if (showLoader) {
+      tbody.innerHTML = `
+        <tr class="loading-row">
+          <td colspan="8"><span class="loading-spinner-sm"></span>Loading call logs…</td>
+        </tr>`;
+    }
+
+    try {
+      const res  = await fetch(`${BASE_URL}/logs/calls`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      allLogs = Array.isArray(data) ? data : (data.calls || data.data || []);
+      renderLogs(allLogs);
+      updateSummary(allLogs);
+      if (showLoader) showToast('Logs refreshed', 'success');
+    } catch (err) {
+      tbody.innerHTML = `
+        <tr class="loading-row">
+          <td colspan="8" style="color:var(--red);">⚠️ Failed to load logs: ${err.message}</td>
+        </tr>`;
+      showToast('Could not load logs: ' + err.message, 'error');
+    }
+
+    // restart countdown
+    countdown = 30;
+    updateCountdownDisplay();
+    countdownInterval = setInterval(() => {
+      countdown--;
+      updateCountdownDisplay();
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+        loadLogs(false);
+      }
+    }, 1000);
+  }
+
+  function updateCountdownDisplay() {
+    const el = document.getElementById('refreshCountdown');
+    if (el) el.textContent = `Auto-refresh in ${countdown}s`;
+  }
+
+  function renderLogs(logs) {
+    const tbody = document.getElementById('logsBody');
+
+    if (!logs || logs.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <div class="empty-title">No Calls Yet</div>
+              <div class="empty-sub">Go to the Calls tab to initiate your first AI voice call.</div>
+            </div>
+          </td>
+        </tr>`;
+      return;
+    }
+
+    tbody.innerHTML = '';
+
+    logs.forEach((log, idx) => {
+      const callId   = log.call_id   || log.id || '';
+      const name     = log.customer_name || '—';
+      const phone    = log.phone_number  || '—';
+      const status   = log.status        || '—';
+      const sentiment= log.sentiment     || '—';
+      const takeaway = log.takeaway      || '';
+      const callback = log.callback;
+      const transcript = log.transcript  || '';
+      const rowId    = `row-${idx}`;
+      const transId  = `trans-${idx}`;
+
+      // Main row
+      const tr = document.createElement('tr');
+      tr.id = rowId;
+      tr.innerHTML = `
+        <td>
+          <button class="btn-expand" onclick="toggleTranscript('${transId}', '${rowId}')" title="Toggle transcript">
+            ▸
+          </button>
+        </td>
+        <td class="td-name">${escHtml(name)}</td>
+        <td class="td-phone">${escHtml(phone)}</td>
+        <td>${statusBadge(status)}</td>
+        <td>${sentimentBadge(sentiment)}</td>
+        <td class="td-feedback" title="${escHtml(takeaway)}">${escHtml(takeaway) || '<span style="color:var(--text-dim)">—</span>'}</td>
+        <td>${callback ? '<span class="callback-tag">📞 Yes</span>' : '<span style="color:var(--text-dim);font-size:12px;">—</span>'}</td>
+        <td>
+          <button class="btn-icon" onclick="openRecording('${escHtml(callId)}', '${escHtml(name)}', '${escHtml(phone)}')">
+            ▶ Recording
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      // Transcript row (hidden)
+      const trTrans = document.createElement('tr');
+      trTrans.id = transId;
+      trTrans.className = 'transcript-row';
+      trTrans.style.display = 'none';
+      trTrans.innerHTML = `
+        <td colspan="8">
+          <div class="transcript-inner">
+            <div class="transcript-label">Transcript</div>
+            ${transcript
+              ? escHtml(transcript).replace(/\n/g, '<br>')
+              : '<em style="color:var(--text-dim)">No transcript available.</em>'}
+          </div>
+        </td>
+      `;
+      tbody.appendChild(trTrans);
+    });
+  }
+
+  function toggleTranscript(transId, rowId) {
+    const row   = document.getElementById(rowId);
+    const trans = document.getElementById(transId);
+    const btn   = row.querySelector('.btn-expand');
+    const open  = trans.style.display !== 'none';
+    trans.style.display = open ? 'none' : 'table-row';
+    btn.textContent = open ? '▸' : '▾';
+    row.classList.toggle('expanded', !open);
+  }
+
+  function updateSummary(logs) {
+    const total     = logs.length;
+    const positive  = logs.filter(l => (l.sentiment || '').toLowerCase() === 'positive').length;
+    const negative  = logs.filter(l => (l.sentiment || '').toLowerCase() === 'negative').length;
+    const neutral   = logs.filter(l => {
+      const s = (l.sentiment || '').toLowerCase();
+      return s === 'neutral' || (s && s !== 'positive' && s !== 'negative');
+    }).length;
+    const callbacks = logs.filter(l => l.callback).length;
+
+    document.getElementById('statTotal').textContent    = total;
+    document.getElementById('statPositive').textContent = positive;
+    document.getElementById('statNegative').textContent = negative;
+    document.getElementById('statNeutral').textContent  = neutral;
+    document.getElementById('statCallback').textContent = callbacks;
+
+    // Unique takeaways
+    const takeaways = [...new Set(
+      logs
+        .map(l => (l.takeaway || '').trim())
+        .filter(t => t.length > 3)
+    )].slice(0, 8);
+
+    const list = document.getElementById('takeawaysList');
+    if (takeaways.length === 0) {
+      list.innerHTML = `<li style="list-style:none;color:var(--text-dim);font-size:13px;font-style:italic;">No feedback themes yet.</li>`;
+    } else {
+      list.innerHTML = takeaways.map(t => `<li>${escHtml(t)}</li>`).join('');
+    }
+  }
+
+  // ── Recording modal ────────────────────────────────────────────────────────
+
+  function openRecording(callId, name, phone) {
+    if (!callId) { showToast('No Call ID for this record.', 'error'); return; }
+
+    document.getElementById('modalSub').textContent = 'Listen to the full call audio';
+    document.getElementById('modalMeta').innerHTML = `
+      <div class="meta-item">
+        <div class="meta-label">Customer</div>
+        <div class="meta-value">${escHtml(name)}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Phone</div>
+        <div class="meta-value" style="font-family:monospace;font-size:13px;">${escHtml(phone)}</div>
+      </div>
+    `;
+
+    const audio = document.getElementById('audioPlayer');
+    audio.pause();
+    audio.src = '';
+    audio.src = `${BASE_URL}/logs/calls/${encodeURIComponent(callId)}/recording`;
+    audio.load();
+
+    document.getElementById('recordingModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    const audio = document.getElementById('audioPlayer');
+    audio.pause();
+    audio.src = '';
+    document.getElementById('recordingModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOnOverlay(e) {
+    if (e.target === document.getElementById('recordingModal')) closeModal();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  function escHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+
+  // Pre-load logs if we start on logs tab; otherwise load when switched
+  window.addEventListener('DOMContentLoaded', () => {
+    // do nothing on load for calls page — logs load on tab switch
+  });
+</script>
+</body>
+</html>
